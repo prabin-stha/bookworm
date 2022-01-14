@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bookworm</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;1,100;1,200;1,300;1,400;1,500;1,600&family=Ubuntu:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+      as="font"
+      crossorigin
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="shortcut icon" href="src/img/logo/book.png" type="image/png" />
+    <link rel="stylesheet" href="src/scss/main.scss" />
+    <script defer src="src/js/controller.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo">
+          <img src="src/img/logo/logo.jpg" alt="logo" />
+        </div>
+        <div class="search">
+          <div class="input-field">
+            <input class="search__box" type="text" placeholder="Search Books" />
+          </div>
+          <button class="search__icon"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="bookmarks"><i class="far fa-bookmark"></i></div>
+      </header>
+      <section>
+        <div class="search-container">Results</div>
+      </section>
+    </div>
+    <footer>
+      <p>
+        Made with <span><i class="fas fa-heart"></i></span> by
+        <span class="name">Prabin Shrestha</span>
+      </p>
+    </footer>
+  </body>
+</html>

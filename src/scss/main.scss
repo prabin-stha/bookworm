@@ -1,0 +1,110 @@
+@import 'resets';
+@import 'variables';
+@import 'mixins';
+
+body {
+  background-image: $linear-gradient;
+  // overflow: hidden;
+  font-family: $poppins;
+
+  .container {
+    margin: 16px 0.5rem;
+
+    & header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #d8d8d8;
+      padding: 0 18px;
+      border-radius: 20px 20px 0 0;
+      height: 50px;
+      box-shadow: 0px 2.2px 1.9px rgba(0, 0, 0, 0.036);
+
+      & .logo {
+        @include flex-center-center;
+
+        img {
+          height: 25px;
+        }
+      }
+
+      & .search {
+        display: flex;
+        flex-direction: row;
+
+        & .input-field .search__box {
+          background-color: $white-light;
+          width: 120px;
+          height: 25px;
+          padding: 12px 12px;
+          border-radius: 15px 0 0 15px;
+          border: none;
+
+          &:focus-visible {
+            outline: none;
+          }
+        }
+
+        & button.search__icon {
+          @include flex-center-center;
+          width: 25px;
+          height: 25px;
+          background-image: $linear-gradient;
+          border-radius: 0 15px 15px 0;
+          border: none;
+
+          & i {
+            color: $white-light;
+            transform: scale(0.8);
+          }
+        }
+      }
+
+      & .bookmarks {
+        background-image: $linear-gradient;
+        height: 25px;
+        width: 25px;
+        border-radius: 15px;
+        padding: 14px;
+        @include flex-center-center;
+
+        & i {
+          color: $white-light;
+          transform: scale(0.7);
+        }
+      }
+    }
+
+    & section {
+      background-color: $white-light;
+      padding: 30px 0;
+      border-radius: 0 0 20px 20px;
+      height: calc(100vh - (96px));
+
+      & .search-container {
+        max-width: 200px;
+        margin: auto;
+      }
+    }
+  }
+}
+
+footer {
+  @include flex-center-center;
+  position: absolute;
+  color: $white-light;
+  font-size: 14px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 8px 0;
+
+  span i {
+    color: #df477f;
+  }
+
+  span.name {
+    text-decoration: underline;
+  }
+}
