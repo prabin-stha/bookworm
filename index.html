@@ -20,14 +20,16 @@
     />
     <link rel="shortcut icon" href="src/img/logo/book.png" type="image/png" />
     <link rel="stylesheet" href="src/scss/main.scss" />
-    <script defer src="src/js/controller.js"></script>
+    <script defer src="src/js/media.js"></script>
   </head>
   <body>
     <div class="container">
       <header>
         <div class="header-container">
           <div class="logo">
-            <img src="src/img/logo/bookworm.png" alt="logo" />
+            <a href="index.html"
+              ><img src="src/img/logo/bookworm.png" alt="logo"
+            /></a>
           </div>
           <div class="search">
             <div class="input-field">
@@ -39,7 +41,7 @@
             </div>
             <button class="search__icon"><i class="fas fa-search"></i></button>
           </div>
-          <div class="bookmarks">
+          <div class="bookmarks-btn">
             <i class="far fa-bookmark"></i>
           </div>
         </div>
@@ -54,6 +56,14 @@
         <span class="name">Prabin Shrestha</span>
       </p>
     </footer>
+    <div class="bookmarks-overlay"></div>
+    <div class="bookmarks">
+      <div class="bookmarks-header">
+        <h1>Bookmarks</h1>
+        <span><i class="fas fa-times-circle"></i></span>
+      </div>
+      <div class="bookmarks-container"></div>
+    </div>
   </body>
-  <script src="src/js/media.js"></script>
+  <script src="src/js/controller.js"></script>
 </html>

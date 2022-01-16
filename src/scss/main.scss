@@ -25,10 +25,11 @@ body {
         margin: 0 auto;
 
         & .logo {
-          @include flex-center-center;
-
-          img {
-            height: 35px;
+          a {
+            & img {
+              @include flex-center-center;
+              height: 35px;
+            }
           }
         }
 
@@ -50,6 +51,10 @@ body {
             }
           }
 
+          & button {
+            cursor: pointer;
+          }
+
           & button.search__icon {
             @include flex-center-center;
             width: 25px;
@@ -65,7 +70,7 @@ body {
           }
         }
 
-        & .bookmarks {
+        & .bookmarks-btn {
           background-image: $linear-gradient;
           color: $white-light;
           font-size: 14px;
@@ -74,6 +79,7 @@ body {
           border-radius: 15px;
           padding: 14px;
           @include flex-center-center;
+          cursor: pointer;
 
           & i {
             color: $white-light;
@@ -113,4 +119,60 @@ footer {
   }
 }
 
+.bookmarks-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: blur(3px);
+  background-color: rgba(51, 51, 51, 0.2);
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+.bookmarks {
+  position: absolute;
+  top: 16px;
+  left: 0px;
+  bottom: 24px;
+  background-color: $white-light;
+  width: 352px;
+  z-index: 999;
+  border-radius: 0 20px 20px 0;
+  transform: translateX(-100%);
+  transition: all 150ms linear;
+
+  &.active {
+    transform: translate(0%);
+  }
+
+  & .bookmarks-header {
+    position: relative;
+
+    & h1 {
+      font-size: 26px;
+      color: #4b4b4b;
+      padding: 18px 18px 24px 18px;
+    }
+
+    & span i {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      transform: scale(1.5);
+      color: #df477f;
+      cursor: pointer;
+    }
+  }
+
+  .bookmarks-container {
+    overflow-y: scroll;
+  }
+}
+
+@import 'supports';
 @import 'media';

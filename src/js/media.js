@@ -1,7 +1,7 @@
 window.onresize = window.onload = function () {
   let width;
   const searchBox = document.querySelector('.search__box');
-  const bookmarks = document.querySelector('.bookmarks');
+  const bookmarks = document.querySelector('.bookmarks-btn');
   width = this.innerWidth;
   if (width >= 600) {
     searchBox.placeholder = 'Search over 1,000,000 of books';
