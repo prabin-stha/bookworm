@@ -1,3 +1,7 @@
+//Polyfilling JS
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
+
 (function () {
   /**
    * *IIFE for Opening/Closing Bookmark Sidebar
@@ -36,9 +40,11 @@ const loadBookInfo = async function (search) {
    */
   try {
     //Fetching all work id's of user search and storing it in a variable
-    const res = await fetch(`http://openlibrary.org/search.json?q=${search}`);
+    const res = await fetch(
+      `http://openlibrary.org/search.json?q=${search}&limit=30`
+    );
     const data = await res.json();
-    const workIds = data.docs.map(el => el.key).slice(0, 20);
+    const workIds = data.docs.map(el => el.key);
     const searchData = [];
 
     for (workId of workIds) {
@@ -124,7 +130,7 @@ const loadBookInfo = async function (search) {
         languages: [],
       };
     }
-    console.log(searchData);
+
     return searchData;
   } catch (err) {
     //TODO: Make a proper error handling
