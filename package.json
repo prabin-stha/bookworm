@@ -1,8 +1,8 @@
 {
   "name": "bookworm",
   "version": "1.0.0",
-  "description": "A simple webpage for getting book information.",
-  "main": "index.js",
+  "description": "A simple website for getting book information, adding bookmarks and writting notes",
+  "main": "bookworm.js",
   "scripts": {
     "start": "parcel index.html",
     "build": "parcel build index.html"
