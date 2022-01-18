@@ -46,8 +46,23 @@
           </div>
         </div>
       </header>
+      <!-- Search Component Here -->
       <section>
-        <div class="search-container"></div>
+        <div class="search-container">
+          <book-item-component
+            url="https://covers.openlibrary.org/b/id/10528858-M.jpg"
+            title="Think and Grow Rich"
+            author="Napolien Hill"
+            date="1997"
+            padding="0"
+            justify-content="center"
+            book-id="OBHDSBL"
+          >
+            <div slot="title">Think and Grow Rich</div>
+            <div slot="author">Napolien Hill</div>
+            <div slot="date">1997</div>
+          </book-item-component>
+        </div>
       </section>
     </div>
     <footer>
@@ -56,13 +71,45 @@
         <span class="name">Prabin Shrestha</span>
       </p>
     </footer>
-    <div class="bookmarks-overlay"></div>
+    <div class="overlay"></div>
     <div class="bookmarks">
       <div class="bookmarks-header">
         <h1>Bookmarks</h1>
         <span><i class="fas fa-times-circle"></i></span>
       </div>
+      <!-- Bookmarks Component Here -->
       <div class="bookmarks-container"></div>
+    </div>
+    <div class="book-info">
+      <div class="close"><i class="fas fa-times-circle"></i></div>
+      <div class="container">
+        <!-- Book information is rendered here -->
+        <!-- TODO: Create HTML template for showing book information -->
+        <div class="book-header">
+          <div class="title-bookmark">
+            <h1>Think and Grow Rich</h1>
+            <span><i class="far fa-bookmark"></i></span>
+          </div>
+          <h2 class="description">
+            What the rich teach their kids about money that the poor and middle
+            class do not!
+          </h2>
+          <h3 class="date">This edition was published in 2005</h3>
+        </div>
+        <div class="img-BScreen"></div>
+        <section class="content">
+          <div class="meta-container">
+            <div class="img-SScreen"></div>
+            <div class="meta"></div>
+          </div>
+          <div class="description"></div>
+          <div class="subjects"></div>
+          <a href="#">Search for this E-Book in PDF Drive</a>
+          <hr />
+          <div class="find-more"></div>
+          <div class="notes"></div>
+        </section>
+      </div>
     </div>
   </body>
   <script type="module" src="src/js/controller.js"></script>
