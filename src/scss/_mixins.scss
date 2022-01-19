@@ -3,3 +3,15 @@
   align-items: center;
   justify-content: center;
 }
+
+@mixin na-box($height: 250px, $width: 175px) {
+  background-image: $linear-gradient;
+  height: $height;
+  width: $width;
+  display: flex;
+  opacity: 0.8;
+  @include flex-center-center();
+  & p {
+    color: $white-light;
+  }
+}

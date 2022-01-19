@@ -1,7 +1,7 @@
 //Tablets
 @media (min-width: 600px) {
   body {
-    .container {
+    .body-container {
       & header {
         & .header-container {
           max-width: 700px;
@@ -22,6 +22,49 @@
       & section {
         & .search-container {
           max-width: 700px;
+        }
+      }
+    }
+  }
+
+  .book-info {
+    & .container {
+      max-width: 450px;
+    }
+  }
+}
+
+@media (min-width: 900px) {
+  .book-info {
+    & .container {
+      max-width: 650px;
+
+      & .book-header {
+        padding-bottom: 18px;
+      }
+      & .book-body {
+        display: flex;
+        gap: 18px;
+        & .img-BScreen {
+          display: block;
+        }
+        & section.content {
+          padding: 0;
+          & .meta-container {
+            .img-SScreen {
+              display: none;
+            }
+
+            & .meta {
+              & .author-publisher {
+                gap: 32px;
+              }
+
+              & .pages-isbn {
+                gap: 32px;
+              }
+            }
+          }
         }
       }
     }

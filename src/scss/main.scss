@@ -7,42 +7,37 @@ body {
   overflow: hidden;
   font-family: $poppins;
 
-  .container {
+  .body-container {
     margin: 16px 8px;
 
-    & header {
-      background-color: #d8d8d8;
+    header {
+      background-color: $white-grey;
       border-radius: 20px 20px 0 0;
-      box-shadow: 0px 2.2px 1.9px rgba(0, 0, 0, 0.036);
 
-      & .header-container {
+      .header-container {
         display: flex;
-        flex-direction: row;
         justify-content: space-between;
         align-items: center;
         padding: 0 18px;
-        height: 50px;
+        height: 60px;
         margin: 0 auto;
 
-        & .logo {
-          a {
-            & img {
-              @include flex-center-center;
-              height: 35px;
-            }
+        .logo {
+          & img {
+            @include flex-center-center;
+            height: 35px;
           }
         }
 
-        & .search {
+        .search {
           display: flex;
-          flex-direction: row;
           align-items: center;
 
-          & .input-field .search__box {
+          .search__box {
             background-color: $white-light;
             width: 120px;
             height: 25px;
-            padding: 12px 12px;
+            padding: 12px;
             border-radius: 5px 0 0 5px;
             border: none;
 
@@ -55,7 +50,7 @@ body {
             cursor: pointer;
           }
 
-          & button.search__icon {
+          .search__icon {
             @include flex-center-center;
             width: 25px;
             height: 25px;
@@ -70,7 +65,7 @@ body {
           }
         }
 
-        & .bookmarks-btn {
+        .bookmarks-btn {
           background-image: $linear-gradient;
           color: $white-light;
           font-size: 14px;
@@ -94,11 +89,16 @@ body {
       margin: 0 auto;
       padding: 30px 0;
       border-radius: 0 0 20px 20px;
-      height: calc(100vh - (90px));
+      height: calc(100vh - (98px));
 
-      & .search-container {
+      .search-container {
         max-width: 300px;
         margin: 0 auto;
+        display: flex;
+        gap: 32px;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 0 18px;
       }
     }
   }
@@ -107,15 +107,15 @@ body {
 footer {
   @include flex-center-center;
   position: absolute;
-  color: $white-light;
+  color: $white-grey;
   font-size: 12px;
   bottom: 0;
   left: 0;
   width: 100%;
   padding: 3px 0;
 
-  span i {
-    color: #df477f;
+  & span i {
+    color: $red-shade-1;
   }
 }
 
@@ -138,9 +138,9 @@ footer {
   position: absolute;
   top: 16px;
   left: 0px;
-  bottom: 24px;
+  bottom: 22px;
   background-color: $white-light;
-  width: 352px;
+  width: 350px;
   z-index: 999;
   border-radius: 0 20px 20px 0;
   transform: translateX(-100%);
@@ -150,12 +150,12 @@ footer {
     transform: translate(0%);
   }
 
-  & .bookmarks-header {
+  .bookmarks-header {
     position: relative;
 
     & h1 {
       font-size: 26px;
-      color: #4b4b4b;
+      color: $black-dark;
       padding: 18px 18px 24px 18px;
     }
 
@@ -164,7 +164,7 @@ footer {
       top: 18px;
       right: 18px;
       transform: scale(1.5);
-      color: #df477f;
+      color: $red-shade-1;
       cursor: pointer;
     }
   }
@@ -176,14 +176,7 @@ footer {
   }
 }
 
-section .search-container {
-  display: flex;
-  gap: 32px;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  padding: 0 18px;
-}
-
+// *Book Information Styles
 .book-info {
   position: absolute;
   top: 16px;
@@ -195,17 +188,18 @@ section .search-container {
   transform: translateY(+100%);
   transition: all 150ms ease-out 200ms;
   z-index: 1000;
+  overflow-y: scroll;
 
   &.active {
     transform: translateY(0%);
   }
 
   & .close i {
-    position: absolute;
+    position: fixed;
     top: 12px;
     right: 12px;
     transform: scale(1.5);
-    color: #df477f;
+    color: $red-shade-1;
     cursor: pointer;
   }
 
@@ -214,8 +208,8 @@ section .search-container {
     margin: 0 auto;
     padding-top: 32px;
 
-    & .book-header {
-      padding-bottom: 18px;
+    .book-header {
+      padding-bottom: 4px;
 
       & .title-bookmark {
         display: flex;
@@ -248,21 +242,124 @@ section .search-container {
       }
 
       & h2 {
+        font-size: 12px;
         color: #6b6b6b;
       }
       & h3 {
         font-size: 10px;
+        color: #6b6b6b;
       }
     }
 
-    & h2 {
-      font-size: 12px;
-      color: #4b4b4b;
-    }
+    & .book-body {
+      & .img-BScreen {
+        display: none;
+      }
 
-    & h3 {
-      font-size: 12px;
-      color: #6b6b6b;
+      & .na-BScreen {
+        @include na-box();
+      }
+
+      section.content {
+        hr {
+          margin: 16px 0;
+        }
+
+        & h2 {
+          font-size: 14px;
+          color: #4b4b4b;
+        }
+
+        & p {
+          font-size: 12px;
+          color: #6b6b6b;
+        }
+
+        & .meta-container {
+          display: flex;
+          gap: 12px;
+
+          & .na-SScreen {
+            @include na-box($height: 150px, $width: 115px);
+          }
+
+          & a p {
+            color: #4c7db0;
+            text-decoration: underline;
+            font-size: 12px;
+          }
+
+          & .meta {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            gap: 16px;
+            width: 100%;
+
+            & .author-publisher {
+              display: flex;
+              flex-direction: column;
+              justify-content: space-around;
+              & a {
+                display: block;
+              }
+            }
+
+            & .pages-isbn {
+              display: flex;
+              flex-direction: column;
+              justify-content: space-around;
+            }
+          }
+        }
+
+        & .description {
+          padding-bottom: 16px;
+        }
+
+        & .subjects {
+          padding-bottom: 16px;
+        }
+
+        & a {
+          color: #4c7db0;
+          text-decoration: underline;
+          font-size: 14px;
+        }
+
+        .find-notes {
+          @include flex-center-center;
+          flex-direction: column;
+          justify-content: center;
+
+          & .find-more {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            padding-bottom: 16px;
+          }
+
+          & .notes textarea {
+            box-shadow: 3.1px 4.3px 3.9px -13px rgba(0, 0, 0, 0.023),
+              7.2px 10px 9px -13px rgba(0, 0, 0, 0.034),
+              12.9px 18px 16.2px -13px rgba(0, 0, 0, 0.041),
+              21.4px 29.9px 26.8px -13px rgba(0, 0, 0, 0.049),
+              35.2px 49.2px 44.2px -13px rgba(0, 0, 0, 0.056),
+              61.5px 86px 77.2px -13px rgba(0, 0, 0, 0.067),
+              133px 186px 167px -13px rgba(0, 0, 0, 0.09);
+            border: 2px solid #4b4b4b;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: $poppins;
+            resize: none;
+            &:focus-visible {
+              outline: none;
+              border: 2px solid #4c7db0;
+            }
+          }
+        }
+      }
     }
   }
 }
