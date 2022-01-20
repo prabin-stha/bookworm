@@ -1,12 +1,14 @@
 //Polyfilling JS
-import { _ } from 'core-js';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
+
+//Import static/dyncmic content
 import logo from 'url:../img/logo/openlibrary.png';
+import na from 'url:../img/na.jpg';
 
 (function () {
   /**
-   * *IIFE for Opening/Closing Bookmark Sidebar and Book Information Section
+   * *IIFE for Opening/Closing Bookmark Sidebar and Show Work/Book Information Section
    */
   const bookmarkBtn = document.querySelector('.bookmarks-btn');
   const bookmarks = document.querySelector('.bookmarks');
@@ -48,19 +50,48 @@ import logo from 'url:../img/logo/openlibrary.png';
 
 const loadWorkIds = async function (search) {
   /**
-   * *Loading Work Ids
+   * *Returns Work Ids
    * @param search Takes in user search string
    */
 
   const res = await fetch(
-    `http://openlibrary.org/search.json?q=${search}&limit=30`
+    `http://openlibrary.org/search.json?q=${search}&limit=10`
   );
   const data = await res.json();
   const workIds = data.docs.map(el => el.key);
   return workIds;
 };
 
+const loadAuthorName = async function (array) {
+  /**
+   * *Takes in array of object/s with key and returns name and key of author
+   */
+  let dataAuthor = [];
+  for (item of array) {
+    const { key } = item;
+    const req = await fetch(`https://openlibrary.org${key}.json`);
+    const data = await req.json();
+    dataAuthor.push([data.personal_name, key]);
+  }
+  return dataAuthor;
+};
+
+const loadSubjects = async function (workId) {
+  /**
+   * *Takes in a workId and returns it's subjects if available else returns undefined
+   */
+  const res = await fetch(`https://openlibrary.org${workId}.json`);
+  const data = await res.json();
+  if (!data.subjects) return undefined;
+  const { subjects } = data;
+  return subjects;
+};
+
 const loadSearchInfo = async function (search) {
+  /**
+   * *Returns search data for book-item-component
+   * @param search Takes in user search string
+   */
   const workIds = await loadWorkIds(search);
   const searchData = [];
 
@@ -70,6 +101,7 @@ const loadSearchInfo = async function (search) {
       title: undefined,
       authors: undefined,
       publish_date: undefined,
+      covers: undefined,
     };
 
     const res = await fetch(`http://openlibrary.org${workId}/editions.json`);
@@ -79,34 +111,44 @@ const loadSearchInfo = async function (search) {
     const { entries } = data;
 
     for (entry of entries) {
-      if (info.key && info.title && info.authors && info.publish_date) break;
       if (
         entry.languages === undefined ||
         entry.languages[0].key === '/languages/eng' ||
         !entry.languages
       ) {
         if (!info.key) info.key = workId;
+        if (!info.covers && entry.covers)
+          info.covers = entry.covers[0].toString();
         if (!info.title && entry.title) info.title = entry.title;
         if (!info.publish_date && entry.publish_date)
           info.publish_date = entry.publish_date;
         if (!info.authors && entry.authors) info.authors = entry.authors;
       }
     }
-    const dataFilter = [info].filter(el => el != undefined);
-    searchData.push(...dataFilter);
+    if (info.authors) {
+      const authorInfo = await loadAuthorName(info.authors);
+      info.authors = authorInfo;
+    }
+    // const dataFilter = [info].filter(el => el != undefined);
+    // searchData.push(...dataFilter);
+    searchData.push(info);
 
     info = {
       key: undefined,
       title: undefined,
       authors: undefined,
       publish_date: undefined,
+      covers: undefined,
     };
   }
-  console.log(workIds);
   return searchData;
 };
 
 const loadBookInfo = async function (workId) {
+  /**
+   * *Returns book information based on workId
+   * @param workId Takes in workId of a book
+   */
   let info = {
     key: undefined,
     title: undefined,
@@ -174,34 +216,9 @@ const loadBookInfo = async function (workId) {
   return info;
 };
 
-const loadAuthorName = async function (array) {
-  /**
-   * *Takes in array of object/s with key and returns name and key of author
-   */
-  let dataAuthor = [];
-  for (item of array) {
-    const { key } = item;
-    const req = await fetch(`https://openlibrary.org${key}.json`);
-    const data = await req.json();
-    dataAuthor.push([data.personal_name, key]);
-  }
-  return dataAuthor;
-};
-
-const loadSubjects = async function (workId) {
-  /**
-   * *Takes in a workId and returns it's subjects
-   */
-  const res = await fetch(`https://openlibrary.org${workId}.json`);
-  const data = await res.json();
-  const { subjects } = data;
-  return subjects;
-};
-
 // *BookItem Web Component
-
 const template = document.createElement('template');
-// slots can be used for adding information inside HTML Elements
+// slots are used for adding information inside HTML Elements
 template.innerHTML = `
 <style>
 *{
@@ -239,10 +256,7 @@ h6 {
 </style>
 <div class="search-item" data-bookId="#">
   <figure>
-    <img id='book-img'
-      width="70"
-      height="100"
-    />
+    <img id='book-img' width="70" height="100"/>
   </figure>
   <div class="desc">
     <h4><slot name='title'></h4>
@@ -254,7 +268,7 @@ h6 {
 
 class BookItem extends HTMLElement {
   /**
-   * *Creating Custom HTML Element
+   * *Creating Custom book-item-component HTML Element
    */
 
   constructor() {
@@ -269,30 +283,32 @@ class BookItem extends HTMLElement {
       this.getAttribute('padding');
     this.shadowRoot.querySelector('.search-item').style.justifyContent =
       this.getAttribute('justify-content');
-    this.shadowRoot.b = undefined;
   }
 
-  async loadInfo(bookId) {
-    const result = await loadBookInfo(bookId);
-    this.shadowRoot.b = result;
+  renderSpinner(parentEl) {
+    const markup = `
+    <div class="loadingio-spinner-double-ring-48jq6smvq69">
+      <div class="ldio-r3slmbus1r">
+        <div></div>
+        <div></div>
+        <div><div></div></div>
+        <div><div></div></div>
+      </div>
+    </div>
+    `;
+    parentEl.innerHTML = '';
+    parentEl.insertAdjacentHTML('afterbegin', markup);
   }
 
-  async connectedCallback() {
-    // *Event when user clicks to the image - It should show book information
-    this.shadowRoot.querySelector('img').addEventListener('click', () => {
-      const overlay = document.querySelector('.overlay');
-      const bookInfo = document.querySelector('.book-info');
-      const bookContainer = document.querySelector('.book-info .container');
+  async showBookInfo(bookId) {
+    //loading Book Info
+    const bookContainer = document.querySelector('.book-info .container');
+    // Rendering Loading Spinner
+    this.renderSpinner(bookContainer);
+    const b = await loadBookInfo(bookId);
 
-      bookInfo.classList.add('active');
-      overlay.classList.add('active');
-
-      // TODO:Render Book Information
-      const bookId = this.getAttribute('book-id');
-      this.loadInfo(bookId);
-      const b = this.shadowRoot.b;
-
-      const renderHTMLInfo = `
+    //Rendering Book Info
+    const markup = `
       <div class="book-header">
           <div class="title-bookmark">
             <h1>${b.title ? b.title : '<p>N.A.</p>'}</h1>
@@ -412,19 +428,86 @@ class BookItem extends HTMLElement {
         </div>
       `;
 
-      bookContainer.innerHTML = '';
-      bookContainer.insertAdjacentHTML('afterbegin', renderHTMLInfo);
+    bookContainer.innerHTML = '';
+    bookContainer.insertAdjacentHTML('afterbegin', markup);
+  }
+
+  connectedCallback() {
+    // *Event when user clicks to the image - It should show book information
+    this.shadowRoot.querySelector('img').addEventListener('click', () => {
+      // Adding animation to book container
+      const overlay = document.querySelector('.overlay');
+      const bookInfo = document.querySelector('.book-info');
+
+      bookInfo.classList.add('active');
+      overlay.classList.add('active');
+
+      // *Showing Book Information
+      const bookId = this.getAttribute('book-id');
+      this.showBookInfo(bookId);
     });
   }
 
-  disconnectedCallback() {
-    this.shadowRoot.querySelector('img').removeEventListener();
-  }
+  // disconnectedCallback() {
+  //   this.shadowRoot.querySelector('img').removeEventListener('click');
+  // }
 }
 
 // *Adding the custom element to document
 customElements.get('book-item-component') ||
   customElements.define('book-item-component', BookItem);
 
-loadBookInfo('/works/OL527464W'); ///works/OL27448W
-// loadSearchInfo('Think and Grow Rich');
+// *Showing Search Results
+function renderSpinner(parentEl) {
+  const markup = `
+  <div class="loadingio-spinner-double-ring-48jq6smvq69">
+    <div class="ldio-r3slmbus1r">
+      <div></div>
+      <div></div>
+      <div><div></div></div>
+      <div><div></div></div>
+    </div>
+  </div>
+  `;
+  parentEl.innerHTML = '';
+  parentEl.insertAdjacentHTML('afterbegin', markup);
+}
+
+const showSearch = async function (s) {
+  const inputData = document.querySelector('input.search__box').value;
+  const searchContainer = document.querySelector('.search-container');
+
+  renderSpinner(searchContainer);
+  const datas = await loadSearchInfo(inputData);
+  searchContainer.innerHTML = '';
+
+  for (d of datas) {
+    const markup = `
+      <book-item-component
+        url="${
+          d.covers
+            ? `https://covers.openlibrary.org/b/id/${d.covers}-M.jpg`
+            : `${na}`
+        }"
+        padding="0"
+        justify-content="center"
+        book-id="${d.key}"
+      >
+        <div slot="title">${d.title ? d.title : 'N.A.'}</div>
+        <div slot="author">${
+          d.authors
+            ? d.authors
+                .map(function (author) {
+                  return `${author[0]}`;
+                })
+                .join(', ')
+            : 'N.A.'
+        }</div>
+        <div slot="date">${d.publish_date ? d.publish_date : 'N.A.'}</div>
+      </book-item-component>
+    `;
+    searchContainer.insertAdjacentHTML('afterbegin', markup);
+  }
+};
+const searchBtn = document.querySelector('button.search__icon');
+searchBtn.addEventListener('click', showSearch);

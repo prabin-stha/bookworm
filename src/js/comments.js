@@ -1,3 +1,5 @@
+// import { _ } from 'core-js';
+
 // try {
 //   //Fetching all work id's of user search and storing it in a variable
 //   const res = await fetch(
@@ -102,6 +104,140 @@
 //   //TODO: Make a proper error handling
 //   console.log(err);
 // }
+
+//Loading and Rendering Book Information
+// this.shadowRoot.b = undefined;
+
+// async loadInfo(bookId) {
+//   const result = await loadBookInfo(bookId);
+//   this.shadowRoot.b = result;
+// }
+
+// this.loadInfo(bookId);
+// const b = this.shadowRoot.b;
+
+// const renderHTMLInfo = `
+// <div class="book-header">
+//     <div class="title-bookmark">
+//       <h1>${b.title ? b.title : '<p>N.A.</p>'}</h1>
+//       <span><i class="far fa-bookmark"></i></span>
+//     </div>
+//     <h2 class="description">
+//       ${b.subtitle ? b.subtitle : '<p>N.A.</p>'}
+//     </h2>
+//     <h3 class="date">This edition was published in ${
+//       b.publish_date ? b.publish_date : '<p>N.A.</p>'
+//     }</h3>
+//   </div>
+//   <div class="book-body">
+//     <div class="img-BScreen">
+//     ${
+//       b.covers
+//         ? `<img
+//           src="https://covers.openlibrary.org/b/id/${b.covers}-M.jpg"
+//           height="250"
+//           width="150"
+//         />`
+//         : `<div class="na-BScreen"><p>N.A.</p></div>`
+//     }
+//     </div>
+//     <section class="content">
+//       <div class="meta-container">
+//         <div class="img-SScreen">
+//         ${
+//           b.covers
+//             ? `<img
+//               src="https://covers.openlibrary.org/b/id/${b.covers}-M.jpg"
+//               height="150"
+//               width="100"
+//             />`
+//             : `<div class="na-SScreen"><p>N.A.</p></div>`
+//         }
+//         </div>
+//         <div class="meta">
+//           <div class="author-publisher">
+//             <div>
+//               <h2>Author</h2>
+//               ${
+//                 b.authors
+//                   ? b.authors
+//                       .map(function (author) {
+//                         return `<a href="http://openlibrary.org${author[1]}"><p>${author[0]}</p></a>`;
+//                       })
+//                       .join('')
+//                   : `<p>N.A.</p>`
+//               }
+//             </div>
+//             <div>
+//               <h2>Publisher</h2>
+//               ${
+//                 b.publishers
+//                   ? b.publishers
+//                       .map(function (publisher) {
+//                         return `<p>${publisher}</p>`;
+//                       })
+//                       .join('')
+//                   : '<p>N.A.</p>'
+//               }
+//             </div>
+//           </div>
+//           <div class="pages-isbn">
+//             <div>
+//               <h2>Pages</h2>
+//               <p>${
+//                 b.number_of_pages ? b.number_of_pages : '<p>N.A.</p>'
+//               }</p>
+//             </div>
+//             <div>
+//               <h2>ISBN10</h2>
+//               <p>${b.isbn_10 ? b.isbn_10 : '<p>N.A.</p>'}</p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//       <hr />
+//       <div class="description">
+//         <h2>Description</h2>
+//         <p>
+//           ${b.description ? b.description : '<p>N.A.</p>'}
+//         </p>
+//       </div>
+//       <div class="subjects">
+//         <h2>Subjects</h2>
+//         <p>
+//           ${b.subjects ? b.subjects.join(', ') : '<p>N.A.</p>'}
+//         </p>
+//       </div>
+//       <a href="https://www.pdfdrive.com/search?q=${
+//         b.title
+//       }" target="_blank">Search for this E-Book in PDF Drive</a>
+//       <hr />
+//       <div class="find-notes">
+//         <div class="find-more">
+//           <h2>Want to learn more about this book?</h2>
+//           <a href="https://openlibrary.org${b.key}" target="_blank"
+//             ><img
+//               title="openlibrary"
+//               src=${logo}
+//               alt="openlibrary logo"
+//               width="60px"
+//           /></a>
+//         </div>
+//         <div class="notes">
+//           <textarea
+//             id="notes"
+//             cols="35"
+//             rows="8"
+//             placeholder="Write some notes about this book here. Don't worry, the data will be saved inside your browser!"
+//           ></textarea>
+//         </div>
+//       </div>
+//     </section>
+//   </div>
+// `;
+
+// bookContainer.innerHTML = '';
+// bookContainer.insertAdjacentHTML('afterbegin', renderHTMLInfo);
 
 //HTML
 {

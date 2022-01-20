@@ -18,6 +18,7 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <!-- <link rel="preload" href="src/img/logo/bookworm.png" as="image" /> -->
     <link rel="shortcut icon" href="src/img/logo/book.png" type="image/png" />
     <link rel="stylesheet" href="src/scss/main.scss" />
     <script defer src="src/js/media.js"></script>
@@ -46,14 +47,11 @@
           </div>
         </div>
       </header>
-      <!-- Search Component Here -->
       <section>
         <div class="search-container">
-          <book-item-component
+          <!-- Book Items Component Here -->
+          <!-- <book-item-component
             url="https://covers.openlibrary.org/b/id/10528858-M.jpg"
-            title="Think and Grow Rich"
-            author="Napolien Hill"
-            date="1997"
             padding="0"
             justify-content="center"
             book-id="/works/OL27448W"
@@ -61,7 +59,7 @@
             <div slot="title">Think and Grow Rich</div>
             <div slot="author">Napolien Hill</div>
             <div slot="date">1997</div>
-          </book-item-component>
+          </book-item-component> -->
         </div>
       </section>
     </div>
@@ -77,8 +75,9 @@
         <h1>Bookmarks</h1>
         <span><i class="fas fa-times-circle"></i></span>
       </div>
-      <!-- Bookmarks Component Here -->
-      <div class="bookmarks-container"></div>
+      <div class="bookmarks-container">
+        <!-- Bookmarks Component Here -->
+      </div>
     </div>
     <div class="book-info">
       <div class="close"><i class="fas fa-times-circle"></i></div>

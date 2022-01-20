@@ -2,66 +2,69 @@
 @media (min-width: 600px) {
   body {
     .body-container {
-      & header {
-        & .header-container {
+      header {
+        .header-container {
           max-width: 700px;
 
-          & .search {
-            & .input-field .search__box {
+          .search {
+            .input-field .search__box {
               width: 225px;
               height: 25px;
             }
           }
 
-          & .bookmarks-btn {
+          .bookmarks-btn {
             width: 125px;
           }
         }
       }
 
-      & section {
-        & .search-container {
+      section {
+        .search-container {
           max-width: 700px;
         }
       }
     }
-  }
 
-  .book-info {
-    & .container {
-      max-width: 450px;
+    .book-info {
+      .container {
+        max-width: 450px;
+      }
     }
   }
 }
 
 @media (min-width: 900px) {
-  .book-info {
-    & .container {
-      max-width: 650px;
+  body {
+    .book-info {
+      .container {
+        max-width: 650px;
 
-      & .book-header {
-        padding-bottom: 18px;
-      }
-      & .book-body {
-        display: flex;
-        gap: 18px;
-        & .img-BScreen {
-          display: block;
+        .book-header {
+          padding-bottom: 18px;
         }
-        & section.content {
-          padding: 0;
-          & .meta-container {
-            .img-SScreen {
-              display: none;
-            }
+        .book-body {
+          display: flex;
+          gap: 18px;
+          .img-BScreen {
+            display: block;
+          }
+          section.content {
+            width: 100%;
 
-            & .meta {
-              & .author-publisher {
-                gap: 32px;
+            .meta-container {
+              .img-SScreen {
+                display: none;
               }
 
-              & .pages-isbn {
-                gap: 32px;
+              .meta {
+                .author-publisher {
+                  gap: 32px;
+                }
+
+                .pages-isbn {
+                  gap: 32px;
+                }
               }
             }
           }
@@ -75,14 +78,14 @@
 @media (min-width: 1366px) {
   body {
     .container {
-      & header {
-        & .header-container {
+      header {
+        .header-container {
           max-width: 900px;
         }
       }
 
-      & section {
-        & .search-container {
+      section {
+        .search-container {
           max-width: 900px;
         }
       }
