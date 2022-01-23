@@ -18,10 +18,12 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <!-- <link rel="preload" href="src/img/logo/bookworm.png" as="image" /> -->
+    <link rel="preload" href="src/img/logo/bookworm.png" as="image" />
     <link rel="shortcut icon" href="src/img/logo/book.png" type="image/png" />
+
     <link rel="stylesheet" href="src/scss/main.scss" />
-    <script defer src="src/js/media.js"></script>
+    <script defer src="src/js/views/media.js"></script>
+    <script type="module" defer src="src/js/controller.js"></script>
   </head>
   <body>
     <div class="body-container">
@@ -50,16 +52,6 @@
       <section>
         <div class="search-container">
           <!-- Book Items Component Here -->
-          <!-- <book-item-component
-            url="https://covers.openlibrary.org/b/id/10528858-M.jpg"
-            padding="0"
-            justify-content="center"
-            book-id="/works/OL27448W"
-          >
-            <div slot="title">Think and Grow Rich</div>
-            <div slot="author">Napolien Hill</div>
-            <div slot="date">1997</div>
-          </book-item-component> -->
         </div>
       </section>
     </div>
@@ -86,5 +78,4 @@
       </div>
     </div>
   </body>
-  <script type="module" src="src/js/controller.js"></script>
 </html>

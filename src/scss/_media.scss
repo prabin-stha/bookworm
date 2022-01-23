@@ -21,7 +21,9 @@
 
       section {
         .search-container {
-          max-width: 700px;
+          max-width: 650px;
+          grid-template-columns: 1fr 1fr;
+          gap: 18px 24px;
         }
       }
     }
@@ -39,7 +41,6 @@
     .book-info {
       .container {
         max-width: 650px;
-
         .book-header {
           padding-bottom: 18px;
         }
@@ -75,9 +76,9 @@
 }
 
 //Laptops
-@media (min-width: 1366px) {
+@media (min-width: 1300px) {
   body {
-    .container {
+    .body-container {
       header {
         .header-container {
           max-width: 900px;
@@ -86,9 +87,16 @@
 
       section {
         .search-container {
-          max-width: 900px;
+          max-width: 850px;
+          grid-template-columns: 1fr 1fr 1fr;
         }
       }
     }
+
+    // .book-info {
+    //   .container {
+    //     max-width: 700px;
+    //   }
+    // }
   }
 }
