@@ -127,7 +127,7 @@ body {
           transform: translateX(-50%);
           width: fit-content;
           height: auto;
-          padding: 10px;
+          padding: 5px 10px;
           background-image: $linear-gradient;
           border-radius: 15px;
           opacity: 0;
@@ -152,21 +152,24 @@ body {
     }
   }
 
+  // *Footer
   footer {
     @include flex-center-center;
     position: absolute;
-    color: $white-grey;
+    color: $white-light;
     font-size: 12px;
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 3px 0;
+    padding: 2px 0;
+    letter-spacing: 1px;
 
     span i {
       color: $red-shade-1;
     }
   }
 
+  // Overlay for Bookmarks and Book Info Container
   .overlay {
     position: absolute;
     top: 0;
@@ -182,6 +185,7 @@ body {
     }
   }
 
+  // *Bookmarks sidebar
   .bookmarks {
     position: absolute;
     top: 16px;

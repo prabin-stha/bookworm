@@ -1,31 +1,15 @@
+import { mark } from 'regenerator-runtime';
 import logo from 'url:../../img/logo/openlibrary.png';
 
 class BookView {
   #parentEl = document.querySelector('.book-info .container');
   #data;
 
-  render(data) {
-    this.#data = data;
-    const markup = this.#generateMarkup();
-    this.#clear();
-    this.#parentEl.insertAdjacentHTML('afterbegin', markup);
-  }
-
   #clear() {
     this.#parentEl.innerHTML = '';
   }
 
-  renderSpinner() {
-    const markup = `
-    <div class="loadingio-spinner-double-ring-48jq6smvq69">
-      <div class="ldio-r3slmbus1r">
-        <div></div>
-        <div></div>
-        <div><div></div></div>
-        <div><div></div></div>
-      </div>
-    </div>
-    `;
+  #clearAndInsert(markup) {
     this.#clear();
     this.#parentEl.insertAdjacentHTML('afterbegin', markup);
   }
@@ -168,6 +152,43 @@ class BookView {
           </section>
         </div>
       `;
+  }
+
+  render(data) {
+    this.#data = data;
+    const markup = this.#generateMarkup();
+    this.#clearAndInsert(markup);
+  }
+
+  renderSpinner() {
+    const markup = `
+    <div class="loadingio-spinner-double-ring-48jq6smvq69">
+      <div class="ldio-r3slmbus1r">
+        <div></div>
+        <div></div>
+        <div><div></div></div>
+        <div><div></div></div>
+      </div>
+    </div>
+    `;
+    this.#clearAndInsert(markup);
+  }
+
+  eventHandlers() {
+    const overlay = document.querySelector('.overlay');
+    const bookInfo = document.querySelector('.book-info');
+    const bookInfoClose = document.querySelector('.book-info .close i');
+
+    function removeBookInfo() {
+      bookInfo.classList.remove('active');
+      setTimeout(() => overlay.classList.remove('active'), 250);
+    }
+
+    bookInfoClose.addEventListener('click', removeBookInfo);
+    overlay.addEventListener('click', () => removeBookInfo());
+    document.addEventListener('keydown', e => {
+      if (e.key == 'Escape') removeBookInfo();
+    });
   }
 }
 

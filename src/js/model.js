@@ -1,7 +1,9 @@
 import { TIMEOUT_SECONDS } from './config.js';
 import { getJSON, timeout } from './helpers.js';
 
-export const state = {};
+export const state = {
+  searchData: [],
+};
 
 const loadWorkIds = async function (search) {
   /**
@@ -63,7 +65,6 @@ export const loadSearchInfo = async function (search) {
    */
   try {
     const workIds = await loadWorkIds(search);
-    const searchData = [];
 
     for (workId of workIds) {
       let info = {
@@ -104,7 +105,7 @@ export const loadSearchInfo = async function (search) {
       }
       // const dataFilter = [info].filter(el => el != undefined);
       // searchData.push(...dataFilter);
-      searchData.push(info);
+      state.searchData.push(info);
 
       info = {
         key: undefined,
@@ -114,7 +115,6 @@ export const loadSearchInfo = async function (search) {
         covers: undefined,
       };
     }
-    return searchData;
   } catch (err) {
     throw err;
   }
