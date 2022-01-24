@@ -100,6 +100,54 @@ body {
         justify-items: flex-start;
         row-gap: 18px;
         padding: 0 32px;
+
+        .error {
+          position: absolute;
+          top: 15vh;
+          left: 50%;
+          transform: translateX(-50%);
+          width: fit-content;
+          padding: 0 50px;
+          p {
+            color: $black-dark;
+            font-size: 14px;
+            text-align: center;
+
+            span i {
+              color: $red-shade-1;
+              transform: scale(1.2);
+            }
+          }
+        }
+
+        .success {
+          position: absolute;
+          bottom: 5vh;
+          left: 21vh;
+          transform: translateX(-50%);
+          width: fit-content;
+          height: auto;
+          padding: 10px;
+          background-image: $linear-gradient;
+          border-radius: 15px;
+          opacity: 0;
+          transition: all 1000ms linear;
+
+          &.active {
+            opacity: 1;
+          }
+
+          p {
+            color: $white-light;
+            font-size: 12px;
+            text-align: center;
+
+            span i {
+              color: #78e08f;
+              transform: scale(1.2);
+            }
+          }
+        }
       }
     }
   }

@@ -1,3 +1,4 @@
+import { mark } from 'regenerator-runtime';
 import na from 'url:../../img/na.jpg';
 
 class SearchView {
@@ -21,7 +22,37 @@ class SearchView {
       </div>
     </div>
     `;
-    this.#clear();
+    this.#clearAndInsert(markup);
+  }
+
+  renderError(error) {
+    const markup = `
+    <div class="error">
+      <p class="msg">
+        <span><i class="fas fa-exclamation-circle"></i></span>&nbsp;&nbsp;${error}
+      </p>
+    </div>
+    `;
+    this.#clearAndInsert(markup);
+  }
+
+  renderSuccess(msg) {
+    const markup = `
+    <div class="success">
+      <p class="msg">
+        <span><i class="fas fa-check-circle"></i></span>&nbsp;&nbsp;${msg}
+      </p>
+    </div>
+    `;
+    this.#parentEl.insertAdjacentHTML('afterbegin', markup);
+    const success = document.querySelector('.success');
+    success.classList.toggle('active');
+    setTimeout(() => success.classList.toggle('active'), 4000);
+    setTimeout(() => success.remove(), 5000);
+  }
+
+  #clearAndInsert(markup) {
+    this.#parentEl.innerHTML = '';
     this.#parentEl.insertAdjacentHTML('afterbegin', markup);
   }
 
@@ -30,6 +61,7 @@ class SearchView {
   }
 
   #generateSearchResults() {
+    if (!this.#data) return;
     this.#data.forEach(el => {
       let authors = el.authors
         ? el.authors
@@ -39,6 +71,8 @@ class SearchView {
             .join(', ')
         : 'N.A.';
       if (authors.length > 40) authors = authors.substring(0, 40) + '...';
+      let title = el.title ? el.title : 'N.A.';
+      if (title.length > 16) title = title.substring(0, 16) + '...';
       const markup = `
       <book-item-component
         url="${
@@ -50,12 +84,14 @@ class SearchView {
         justify-content="center"
         book-id="${el.key}"
       >
-        <div slot="title">${el.title ? el.title : 'N.A.'}</div>
+        <div slot="title">${title}</div>
         <div slot="author">${authors}</div>
         <div slot="date">${el.publish_date ? el.publish_date : 'N.A.'}</div>
       </book-item-component>
     `;
       this.#parentEl.insertAdjacentHTML('beforeend', markup);
+      const lenSearch = this.#data.length;
+      this.renderSuccess(`${lenSearch} books with similar names found`);
     });
   }
 }

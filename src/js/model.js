@@ -1,3 +1,6 @@
+import { TIMEOUT_SECONDS } from './config.js';
+import { getJSON, timeout } from './helpers.js';
+
 export const state = {};
 
 const loadWorkIds = async function (search) {
@@ -7,14 +10,17 @@ const loadWorkIds = async function (search) {
    */
 
   try {
-    const res = await fetch(
+    const data = await getJSON(
       `http://openlibrary.org/search.json?q=${search}&limit=10`
     );
-    const data = await res.json();
     const workIds = data.docs.map(el => el.key);
+    if (!workIds.length)
+      throw new Error(
+        `No books with name "${search}" found. Please try another book name!`
+      );
     return workIds;
   } catch (err) {
-    alert(err);
+    throw err;
   }
 };
 
@@ -24,16 +30,15 @@ const loadAuthorName = async function (array) {
    */
   try {
     let dataAuthor = [];
-    if (!array) return;
+    if (!array) return undefined;
     for (item of array) {
       const { key } = item;
-      const req = await fetch(`https://openlibrary.org${key}.json`);
-      const data = await req.json();
+      const data = await getJSON(`https://openlibrary.org${key}.json`);
       dataAuthor.push([data.name, key]);
     }
     return dataAuthor;
   } catch (err) {
-    alert(err);
+    throw err;
   }
 };
 
@@ -42,13 +47,12 @@ const loadSubjects = async function (workId) {
    * *Takes in a workId and returns it's subjects if available else returns undefined
    */
   try {
-    const res = await fetch(`https://openlibrary.org${workId}.json`);
-    const data = await res.json();
+    const data = await getJSON(`https://openlibrary.org${workId}.json`);
     if (!data.subjects) return undefined;
     const { subjects } = data;
     return subjects;
   } catch (err) {
-    alert(err);
+    console.error(err);
   }
 };
 
@@ -70,10 +74,13 @@ export const loadSearchInfo = async function (search) {
         covers: undefined,
       };
 
-      const res = await fetch(`http://openlibrary.org${workId}/editions.json`);
+      const res = await Promise.race([
+        fetch(`http://openlibrary.org${workId}/editions.json`),
+        timeout(TIMEOUT_SECONDS),
+      ]);
       const data = await res.json();
 
-      if (data.error) continue;
+      if (!res.ok) continue;
       const { entries } = data;
 
       for (entry of entries) {
@@ -109,7 +116,7 @@ export const loadSearchInfo = async function (search) {
     }
     return searchData;
   } catch (err) {
-    alert(err);
+    throw err;
   }
 };
 
@@ -136,10 +143,8 @@ export const loadBookInfo = async function (workId) {
     };
 
     //Fetching each editions of a certain work
-    const res = await fetch(`http://openlibrary.org${workId}/editions.json`);
-    const data = await res.json();
+    const data = await getJSON(`http://openlibrary.org${workId}/editions.json`);
 
-    if (data.error) return;
     const { entries } = data;
 
     // For each edition, if there exist a property not available in the info object then insert its value
@@ -185,6 +190,6 @@ export const loadBookInfo = async function (workId) {
     info.subjects = subjects;
     return info;
   } catch (err) {
-    alert(err);
+    console.error(err);
   }
 };

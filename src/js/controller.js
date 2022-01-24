@@ -56,16 +56,20 @@ import searchView from './views/searchView';
    * *IIFE for showing search results for user search string
    */
   const searchController = async function () {
-    const inputData = document.querySelector('input.search__box').value;
+    try {
+      const inputData = document.querySelector('input.search__box').value;
 
-    //Render Spinner
-    searchView.renderSpinner();
+      //Render Spinner
+      searchView.renderSpinner();
 
-    //Load Search Results
-    const data = await model.loadSearchInfo(inputData);
+      //Load Search Results
+      const data = await model.loadSearchInfo(inputData);
 
-    //Render Search Result
-    searchView.render(data);
+      //Render Search Result
+      searchView.render(data);
+    } catch (err) {
+      searchView.renderError(err);
+    }
   };
 
   //Show search results when user clicks search button or presses enter inside input el
@@ -147,14 +151,18 @@ class BookItem extends HTMLElement {
   }
 
   async #bookController(bookId) {
-    // Rendering Loading Spinner
-    bookView.renderSpinner();
+    try {
+      // Rendering Loading Spinner
+      bookView.renderSpinner();
 
-    //loading Book Info
-    const data = await model.loadBookInfo(bookId);
+      //loading Book Info
+      const data = await model.loadBookInfo(bookId);
 
-    //Rendering Book Info
-    bookView.render(data);
+      //Rendering Book Info
+      bookView.render(data);
+    } catch (err) {
+      // TODO: Handle Error
+    }
   }
 
   #showBookInfo() {
