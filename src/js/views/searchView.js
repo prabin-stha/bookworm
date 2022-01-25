@@ -44,14 +44,19 @@ class SearchView {
       </book-item-component>
     `;
       this.#parentEl.insertAdjacentHTML('beforeend', markup);
-      const lenSearch = this.#data.length;
-      this.renderSuccess(`${lenSearch} books with similar names found`);
     });
   }
 
-  render(data) {
+  render(data, lenSearch) {
     this.#data = data;
     this.#clear();
+    this.#generateSearchResults();
+    this.renderSuccess(`${lenSearch} books with similar names found`);
+  }
+
+  renderMore(data) {
+    document.querySelector('button.load-more').remove();
+    this.#data = data;
     this.#generateSearchResults();
   }
 
@@ -101,7 +106,7 @@ class SearchView {
 
   getQuery() {
     const query = document.querySelector('input.search__box').value;
-    this.#clearInput();
+    setTimeout(() => this.#clearInput(), 200);
     return query;
   }
 

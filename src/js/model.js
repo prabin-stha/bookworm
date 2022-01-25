@@ -1,8 +1,13 @@
-import { TIMEOUT_SECONDS } from './config.js';
+import { LIMIT, RESULTS_PER_PAGE, TIMEOUT_SECONDS } from './config.js';
 import { getJSON, timeout } from './helpers.js';
 
 export const state = {
-  searchData: [],
+  search: {
+    query: '',
+    results: [],
+    level: 1,
+    resultsPerPage: RESULTS_PER_PAGE,
+  },
 };
 
 const loadWorkIds = async function (search) {
@@ -13,7 +18,7 @@ const loadWorkIds = async function (search) {
 
   try {
     const data = await getJSON(
-      `http://openlibrary.org/search.json?q=${search}&limit=10`
+      `http://openlibrary.org/search.json?q=${search}&limit=${LIMIT}`
     );
     const workIds = data.docs.map(el => el.key);
     if (!workIds.length)
@@ -64,6 +69,7 @@ export const loadSearchInfo = async function (search) {
    * @param search Takes in user search string
    */
   try {
+    state.search.query = search;
     const workIds = await loadWorkIds(search);
 
     for (workId of workIds) {
@@ -103,9 +109,8 @@ export const loadSearchInfo = async function (search) {
         const authorInfo = await loadAuthorName(info.authors);
         info.authors = authorInfo;
       }
-      // const dataFilter = [info].filter(el => el != undefined);
-      // searchData.push(...dataFilter);
-      state.searchData.push(info);
+
+      state.search.results.push(info);
 
       info = {
         key: undefined,
@@ -118,6 +123,15 @@ export const loadSearchInfo = async function (search) {
   } catch (err) {
     throw err;
   }
+};
+
+export const loadSearchResults = function (level) {
+  state.search.level = level;
+
+  const start = (level - 1) * 12;
+  const end = start + 12;
+
+  return state.search.results.slice(start, end);
 };
 
 export const loadBookInfo = async function (workId) {

@@ -24,6 +24,10 @@
           max-width: 650px;
           grid-template-columns: 1fr 1fr;
           gap: 18px 24px;
+
+          button.load-more {
+            grid-column: span 2;
+          }
         }
       }
     }
@@ -89,6 +93,10 @@
         .search-container {
           max-width: 850px;
           grid-template-columns: 1fr 1fr 1fr;
+
+          button.load-more {
+            grid-column: span 3;
+          }
         }
       }
     }

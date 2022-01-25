@@ -9,6 +9,7 @@ import * as model from './model.js';
 import bookView from './views/bookView';
 import searchView from './views/searchView';
 import bookmarksView from './views/bookmarksView.js';
+import loadMoreView from './views/loadMoreView.js';
 
 (function () {
   /**
@@ -139,13 +140,44 @@ const searchController = async function () {
     searchView.renderSpinner();
 
     //Load Search Results
-    const data = await model.loadSearchInfo(query);
+    await model.loadSearchInfo(query);
 
     //Render Search Result
-    searchView.render(model.state.searchData);
+    searchView.render(
+      model.loadSearchResults(model.state.search.level),
+      model.state.search.results.length
+    );
+    model.state.search.level += 1;
+
+    //Render Load More
+    const maxLevel = Math.ceil(
+      model.state.search.results.length / model.state.search.resultsPerPage
+    );
+    if (maxLevel > 1) {
+      loadMoreView.render(model.state.search);
+      loadMoreView.eventHandlers(loadMoreController);
+    }
   } catch (err) {
     searchView.renderError(err);
   }
+};
+
+const addLoadMoreHandler = function () {
+  const loadMoreBtn = document.querySelector('button.load-more');
+  loadMoreBtn.removeEventListener('click', loadMoreController);
+  loadMoreView.eventHandlers(loadMoreController);
+};
+
+const loadMoreController = function () {
+  const maxLevel = Math.ceil(
+    model.state.search.results.length / model.state.search.resultsPerPage
+  );
+  searchView.renderMore(model.loadSearchResults(model.state.search.level));
+  if (model.state.search.level < maxLevel) {
+    loadMoreView.render();
+    addLoadMoreHandler();
+  }
+  model.state.search.level += 1;
 };
 
 const init = function () {

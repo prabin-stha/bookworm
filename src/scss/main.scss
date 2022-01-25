@@ -87,7 +87,7 @@ body {
     section {
       background-color: $white-light;
       margin: 0 auto;
-      padding: 30px 0;
+      padding: 30px 0 20px 0;
       border-radius: 0 0 20px 20px;
       height: calc(100vh - (98px));
       overflow-y: scroll;
@@ -123,8 +123,7 @@ body {
         .success {
           position: absolute;
           bottom: 5vh;
-          left: 21vh;
-          transform: translateX(-50%);
+          left: 3vh;
           width: fit-content;
           height: auto;
           padding: 5px 10px;
@@ -147,6 +146,17 @@ body {
               transform: scale(1.2);
             }
           }
+        }
+
+        button.load-more {
+          justify-self: center;
+          background-image: $linear-gradient;
+          padding: 4px 14px;
+          border-radius: 15px;
+          color: $white-light;
+          font-size: 14px;
+          border: none;
+          cursor: pointer;
         }
       }
     }
