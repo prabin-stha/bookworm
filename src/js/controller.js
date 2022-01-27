@@ -190,7 +190,6 @@ const addBookmarkController = function () {
   } else if (!model.state.book.bookmarked) {
     model.addBookmark(model.state.book.info.key);
   }
-  // console.log(model.state.bookmarks.results);
   bookView.update(model.state.book);
 };
 
@@ -200,7 +199,11 @@ const bookmarkController = async function () {
     bookmarksView.renderSpinner();
 
     //Load Data
-    await model.loadBookmarksInfo();
+    if (
+      model.state.bookmarks.present.length !=
+      model.state.bookmarks.results.length
+    )
+      await model.loadBookmarksInfo();
 
     //Render Data
     bookmarksView.render(model.state.bookmarks.results);

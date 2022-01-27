@@ -78,30 +78,31 @@ class BookmarksView {
 
   bookmarkEventHandler(handler) {
     const bookmarksBtn = document.querySelector('.bookmarks-btn');
-    const overlay = document.querySelector('.overlay');
-    const bookmarks = document.querySelector('.bookmarks');
 
-    function addBookmark() {
-      bookmarks.classList.add('active');
-      overlay.classList.add('active');
-    }
-
-    bookmarksBtn.addEventListener('click', () => {
-      addBookmark();
+    const handle = function () {
+      bookmarksBtn.removeEventListener('click', handle);
       handler();
-    });
+    };
+
+    bookmarksBtn.addEventListener('click', handler);
   }
 
   eventHandlers() {
     const bookmarks = document.querySelector('.bookmarks');
     const bookmarksClose = document.querySelector('.bookmarks-header span');
     const overlay = document.querySelector('.overlay');
+    const bookmarksBtn = document.querySelector('.bookmarks-btn');
 
+    function addBookmark() {
+      bookmarks.classList.add('active');
+      overlay.classList.add('active');
+    }
     function removeBookmark() {
       bookmarks.classList.remove('active');
       setTimeout(() => overlay.classList.remove('active'), 100);
     }
 
+    bookmarksBtn.addEventListener('click', addBookmark);
     bookmarksClose.addEventListener('click', () => removeBookmark());
     overlay.addEventListener('click', () => removeBookmark());
     document.addEventListener('keydown', e => {

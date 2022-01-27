@@ -115,7 +115,10 @@ class SearchView {
     const input = document.querySelector('input.search__box');
     searchBtn.addEventListener('click', searchController);
     input.addEventListener('keydown', e => {
-      if (e.key == 'Enter') searchController();
+      if (e.key == 'Enter') {
+        searchController();
+        document.querySelector('input.search__box').blur();
+      }
     });
   }
 }

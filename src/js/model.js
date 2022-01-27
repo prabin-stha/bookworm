@@ -79,6 +79,10 @@ export const loadSearchInfo = async function (search) {
   try {
     state.search.results = [];
     state.search.query = search;
+
+    if (search === '')
+      throw new Error('Opps! you forgot to enter a book name.');
+
     const workIds = await loadWorkIds(search);
 
     for (workId of workIds) {
@@ -167,8 +171,7 @@ export const loadBookInfo = async function (workId) {
       languages: [],
     };
 
-    if (state.bookmarks.present.some(bookmark => bookmark === workId))
-      state.book.bookmarked = true;
+    if (state.bookmarks.present.includes(workId)) state.book.bookmarked = true;
     else state.book.bookmarked = false;
 
     //Fetching each editions of a certain work
@@ -264,6 +267,7 @@ export const loadBookmarksInfo = async function () {
         info.authors = authorInfo;
       }
 
+      if (state.bookmarks.results.some(el => el.key === info.key)) continue;
       state.bookmarks.results.push(info);
 
       info = {
