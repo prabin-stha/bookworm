@@ -2,11 +2,19 @@ import { LIMIT, RESULTS_PER_PAGE, TIMEOUT_SECONDS } from './config.js';
 import { getJSON, timeout } from './helpers.js';
 
 export const state = {
+  book: {
+    bookmarked: undefined,
+    info: {},
+  },
   search: {
     query: '',
     results: [],
     level: 1,
     resultsPerPage: RESULTS_PER_PAGE,
+  },
+  bookmarks: {
+    present: [],
+    results: [],
   },
 };
 
@@ -69,6 +77,7 @@ export const loadSearchInfo = async function (search) {
    * @param search Takes in user search string
    */
   try {
+    state.search.results = [];
     state.search.query = search;
     const workIds = await loadWorkIds(search);
 
@@ -120,6 +129,7 @@ export const loadSearchInfo = async function (search) {
         covers: undefined,
       };
     }
+    state.search.level = 1;
   } catch (err) {
     throw err;
   }
@@ -140,6 +150,7 @@ export const loadBookInfo = async function (workId) {
    * @param workId Takes in workId of a book
    */
   try {
+    state.book.info = {};
     let info = {
       key: undefined,
       title: undefined,
@@ -155,6 +166,10 @@ export const loadBookInfo = async function (workId) {
       subjects: undefined,
       languages: [],
     };
+
+    if (state.bookmarks.present.some(bookmark => bookmark === workId))
+      state.book.bookmarked = true;
+    else state.book.bookmarked = false;
 
     //Fetching each editions of a certain work
     const data = await getJSON(`http://openlibrary.org${workId}/editions.json`);
@@ -202,8 +217,94 @@ export const loadBookInfo = async function (workId) {
     info.authors = authorInfo;
     const subjects = await loadSubjects(info.key);
     info.subjects = subjects;
-    return info;
+    state.book.info = info;
   } catch (err) {
     console.error(err);
   }
 };
+
+export const loadBookmarksInfo = async function () {
+  try {
+    state.bookmarks.results = [];
+    for (workId of state.bookmarks.present) {
+      let info = {
+        key: undefined,
+        title: undefined,
+        authors: undefined,
+        publish_date: undefined,
+        covers: undefined,
+      };
+
+      const res = await Promise.race([
+        fetch(`http://openlibrary.org${workId}/editions.json`),
+        timeout(TIMEOUT_SECONDS),
+      ]);
+      const data = await res.json();
+
+      if (!res.ok) continue;
+      const { entries } = data;
+
+      for (entry of entries) {
+        if (
+          entry.languages === undefined ||
+          entry.languages[0].key === '/languages/eng' ||
+          !entry.languages
+        ) {
+          if (!info.key) info.key = workId;
+          if (!info.covers && entry.covers)
+            info.covers = entry.covers[0].toString();
+          if (!info.title && entry.title) info.title = entry.title;
+          if (!info.publish_date && entry.publish_date)
+            info.publish_date = entry.publish_date;
+          if (!info.authors && entry.authors) info.authors = entry.authors;
+        }
+      }
+      if (info.authors) {
+        const authorInfo = await loadAuthorName(info.authors);
+        info.authors = authorInfo;
+      }
+
+      state.bookmarks.results.push(info);
+
+      info = {
+        key: undefined,
+        title: undefined,
+        authors: undefined,
+        publish_date: undefined,
+        covers: undefined,
+      };
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const addBookmark = function (bookId) {
+  //Add Bookmark
+  state.bookmarks.present.push(bookId);
+
+  //Mark Current book as bookmark
+  if (bookId === state.book.info.key) state.book.bookmarked = true;
+
+  modifyLocalStorage();
+};
+
+export const removeBookmark = function (bookId) {
+  //Remove Bookmark
+  state.bookmarks.present = state.bookmarks.present.filter(el => el != bookId);
+
+  //Unmark Current book as bookmark
+  if (bookId === state.book.info.key) state.book.bookmarked = false;
+
+  modifyLocalStorage();
+};
+
+const modifyLocalStorage = function () {
+  localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks.present));
+};
+
+const init = function () {
+  const bookmarks = localStorage.getItem('bookmarks');
+  if (bookmarks) state.bookmarks.present = JSON.parse(bookmarks);
+};
+init();

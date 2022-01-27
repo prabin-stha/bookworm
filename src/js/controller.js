@@ -89,7 +89,8 @@ import loadMoreView from './views/loadMoreView.js';
         bookView.renderSpinner();
 
         //loading Book Info
-        const data = await model.loadBookInfo(bookId);
+        await model.loadBookInfo(bookId);
+        const data = model.state.book;
 
         //Rendering Book Info
         bookView.render(data);
@@ -99,6 +100,10 @@ import loadMoreView from './views/loadMoreView.js';
     }
 
     #showBookInfo() {
+      const bookmarks = document.querySelector('.bookmarks');
+      if (bookmarks.classList.contains('active'))
+        bookmarks.classList.remove('active');
+
       // Displaying Book Information container and adding overlay
       const overlay = document.querySelector('.overlay');
       const bookInfo = document.querySelector('.book-info');
@@ -163,8 +168,7 @@ const searchController = async function () {
 };
 
 const addLoadMoreHandler = function () {
-  const loadMoreBtn = document.querySelector('button.load-more');
-  loadMoreBtn.removeEventListener('click', loadMoreController);
+  loadMoreView.removeHandlers(loadMoreController);
   loadMoreView.eventHandlers(loadMoreController);
 };
 
@@ -180,10 +184,37 @@ const loadMoreController = function () {
   model.state.search.level += 1;
 };
 
+const addBookmarkController = function () {
+  if (model.state.book.bookmarked) {
+    model.removeBookmark(model.state.book.info.key);
+  } else if (!model.state.book.bookmarked) {
+    model.addBookmark(model.state.book.info.key);
+  }
+  // console.log(model.state.bookmarks.results);
+  bookView.update(model.state.book);
+};
+
+const bookmarkController = async function () {
+  if (model.state.bookmarks.present.length >= 1) {
+    //Render Spinner
+    bookmarksView.renderSpinner();
+
+    //Load Data
+    await model.loadBookmarksInfo();
+
+    //Render Data
+    bookmarksView.render(model.state.bookmarks.results);
+  } else {
+    bookmarksView.renderEmptyMessage();
+  }
+};
+
 const init = function () {
   bookView.eventHandlers();
+  bookView.addBookmarkEventHandler(addBookmarkController);
   searchView.eventHandlers(searchController);
   bookmarksView.eventHandlers();
+  bookmarksView.bookmarkEventHandler(bookmarkController);
 };
 
 init();

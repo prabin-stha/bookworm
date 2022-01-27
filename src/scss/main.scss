@@ -76,9 +76,15 @@ body {
           @include flex-center-center;
           cursor: pointer;
 
+          transition: all 100ms ease-out;
+
+          &:hover {
+            transform: scale(0.9);
+          }
+
           i {
             color: $white-light;
-            transform: scale(0.8);
+            transform: scale(0.9);
           }
         }
       }
@@ -127,7 +133,8 @@ body {
           width: fit-content;
           height: auto;
           padding: 5px 10px;
-          background-image: $linear-gradient;
+          // background-image: $linear-gradient;
+          background-color: $black-dark;
           border-radius: 15px;
           opacity: 0;
           transition: all 1000ms linear;
@@ -138,7 +145,7 @@ body {
 
           p {
             color: $white-light;
-            font-size: 12px;
+            font-size: 14px;
             text-align: center;
 
             span i {
@@ -151,12 +158,17 @@ body {
         button.load-more {
           justify-self: center;
           background-image: $linear-gradient;
-          padding: 4px 14px;
+          padding: 6px 14px;
           border-radius: 15px;
           color: $white-light;
           font-size: 14px;
           border: none;
           cursor: pointer;
+          transition: transform 100ms ease-out;
+
+          &:hover {
+            transform: scale(0.9);
+          }
         }
       }
     }
@@ -207,6 +219,9 @@ body {
     border-radius: 0 20px 20px 0;
     transform: translateX(-100%);
     transition: all 150ms linear;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 
     &.active {
       transform: translate(0%);
@@ -232,9 +247,27 @@ body {
     }
 
     .bookmarks-container {
-      overflow-y: scroll;
+      display: grid;
+      grid-template-columns: 1fr;
+      justify-items: flex-start;
+      row-gap: 18px;
       padding-left: 18px;
       max-width: 330px;
+      font-size: 14px;
+      overflow-y: auto;
+      margin-bottom: 12px;
+
+      book-item-component {
+        transition: padding 100ms ease-out;
+        &:hover {
+          padding-left: 5px;
+          border-radius: 10vh;
+        }
+      }
+
+      p span i {
+        color: $red-shade-1;
+      }
     }
   }
 
@@ -268,7 +301,7 @@ body {
     .container {
       max-width: 300px;
       margin: 0 auto;
-      padding-top: 32px;
+      padding-top: 52px;
 
       .book-header {
         padding-bottom: 18px;

@@ -18,23 +18,35 @@ class BookView {
     return `
       <div class="book-header">
           <div class="title-bookmark">
-            <h1>${this.#data.title ? this.#data.title : '<p>N.A.</p>'}</h1>
-            <span><i class="far fa-bookmark"></i></span>
+            <h1>${
+              this.#data.info.title ? this.#data.info.title : '<p>N.A.</p>'
+            }</h1>
+            <span><i ${
+              this.#data.bookmarked
+                ? 'class="fas fa-bookmark"'
+                : 'class="far fa-bookmark"'
+            }></i></span>
           </div>
           <h2 class="description">
-            ${this.#data.subtitle ? this.#data.subtitle : '<p>N.A.</p>'}
+            ${
+              this.#data.info.subtitle
+                ? this.#data.info.subtitle
+                : '<p>N.A.</p>'
+            }
           </h2>
           <h3 class="date">This edition was published in ${
-            this.#data.publish_date ? this.#data.publish_date : '<p>N.A.</p>'
+            this.#data.info.publish_date
+              ? this.#data.info.publish_date
+              : '<p>N.A.</p>'
           }</h3>
         </div>
         <div class="book-body">
           <div class="img-BScreen">
           ${
-            this.#data.covers
+            this.#data.info.covers
               ? `<img
                 src="https://covers.openlibrary.org/b/id/${
-                  this.#data.covers
+                  this.#data.info.covers
                 }-M.jpg"
                 height="250"
                 width="150"
@@ -46,10 +58,10 @@ class BookView {
             <div class="meta-container">
               <div class="img-SScreen">
               ${
-                this.#data.covers
+                this.#data.info.covers
                   ? `<img
                     src="https://covers.openlibrary.org/b/id/${
-                      this.#data.covers
+                      this.#data.info.covers
                     }-M.jpg"
                     height="150"
                     width="100"
@@ -62,8 +74,8 @@ class BookView {
                   <div>
                     <h2>Author</h2>
                     ${
-                      this.#data.authors
-                        ? this.#data.authors
+                      this.#data.info.authors
+                        ? this.#data.info.authors
                             .map(function (author) {
                               return `<a href="http://openlibrary.org${author[1]}" target="_blank"><p>${author[0]}</p></a>`;
                             })
@@ -74,8 +86,8 @@ class BookView {
                   <div>
                     <h2>Publisher</h2>
                     ${
-                      this.#data.publishers
-                        ? this.#data.publishers
+                      this.#data.info.publishers
+                        ? this.#data.info.publishers
                             .map(function (publisher) {
                               return `<p>${publisher}</p>`;
                             })
@@ -88,15 +100,17 @@ class BookView {
                   <div>
                     <h2>Pages</h2>
                     <p>${
-                      this.#data.number_of_pages
-                        ? this.#data.number_of_pages
+                      this.#data.info.number_of_pages
+                        ? this.#data.info.number_of_pages
                         : '<p>N.A.</p>'
                     }</p>
                   </div>
                   <div>
                     <h2>ISBN10</h2>
                     <p>${
-                      this.#data.isbn_10 ? this.#data.isbn_10 : '<p>N.A.</p>'
+                      this.#data.info.isbn_10
+                        ? this.#data.info.isbn_10
+                        : '<p>N.A.</p>'
                     }</p>
                   </div>
                 </div>
@@ -107,8 +121,8 @@ class BookView {
               <h2>Description</h2>
               <p>
                 ${
-                  this.#data.description
-                    ? this.#data.description
+                  this.#data.info.description
+                    ? this.#data.info.description
                     : '<p>N.A.</p>'
                 }
               </p>
@@ -117,21 +131,21 @@ class BookView {
               <h2>Subjects</h2>
               <p>
                 ${
-                  this.#data.subjects
-                    ? this.#data.subjects.join(', ')
+                  this.#data.info.subjects
+                    ? this.#data.info.subjects.join(', ')
                     : '<p>N.A.</p>'
                 }
               </p>
             </div>
             <a href="https://www.pdfdrive.com/search?q=${
-              this.#data.title
+              this.#data.info.title
             }" target="_blank">Search for this E-Book in PDF Drive</a>
             <hr />
             <div class="find-notes">
               <div class="find-more">
                 <h2>Want to learn more about this book?</h2>
                 <a href="https://openlibrary.org${
-                  this.#data.key
+                  this.#data.info.key
                 }" target="_blank"
                   ><img
                     title="openlibrary"
@@ -152,6 +166,29 @@ class BookView {
           </section>
         </div>
       `;
+  }
+
+  update(data) {
+    this.#data = data;
+    const newMarkup = this.#generateMarkup();
+
+    const newDom = document.createRange().createContextualFragment(newMarkup);
+    const newElements = Array.from(newDom.querySelectorAll('*'));
+    const curElements = Array.from(this.#parentEl.querySelectorAll('*'));
+
+    newElements.forEach((newEl, i) => {
+      const curEl = curElements[i];
+      if (!newEl.isEqualNode(curEl)) {
+        Array.from(newEl.attributes).forEach(attr => {
+          if (
+            attr.value === 'fas fa-bookmark' ||
+            attr.value === 'far fa-bookmark'
+          ) {
+            curEl.setAttribute(attr.name, attr.value);
+          }
+        });
+      }
+    });
   }
 
   render(data) {
@@ -188,6 +225,14 @@ class BookView {
     overlay.addEventListener('click', () => removeBookInfo());
     document.addEventListener('keydown', e => {
       if (e.key == 'Escape') removeBookInfo();
+    });
+  }
+
+  addBookmarkEventHandler(handler) {
+    this.#parentEl.addEventListener('click', e => {
+      const bookmarkBtn = e.target.closest('.title-bookmark span');
+      if (!bookmarkBtn) return;
+      handler();
     });
   }
 }

@@ -16,6 +16,11 @@ class LoadMoreView {
     loadMoreBtn.addEventListener('click', handler);
   }
 
+  removeHandlers(handler) {
+    const loadMoreBtn = document.querySelector('button.load-more');
+    loadMoreBtn.removeEventListener('click', handler);
+  }
+
   render() {
     const markup = this.#generateMarkup();
     this.#parentEl.insertAdjacentHTML('beforeend', markup);

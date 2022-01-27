@@ -106,7 +106,7 @@ class SearchView {
 
   getQuery() {
     const query = document.querySelector('input.search__box').value;
-    setTimeout(() => this.#clearInput(), 200);
+    setTimeout(() => this.#clearInput(), 50);
     return query;
   }
 
