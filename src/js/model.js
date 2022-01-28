@@ -16,6 +16,7 @@ export const state = {
     present: [],
     results: [],
   },
+  notes: [],
 };
 
 const loadWorkIds = async function (search) {
@@ -154,7 +155,6 @@ export const loadBookInfo = async function (workId) {
    * @param workId Takes in workId of a book
    */
   try {
-    state.book.info = {};
     let info = {
       key: undefined,
       title: undefined,
@@ -168,11 +168,14 @@ export const loadBookInfo = async function (workId) {
       isbn_10: undefined,
       isbn_13: undefined,
       subjects: undefined,
-      languages: [],
     };
 
     if (state.bookmarks.present.includes(workId)) state.book.bookmarked = true;
     else state.book.bookmarked = false;
+
+    if (state.notes.some(el => el.key === workId))
+      state.book.note = state.notes.filter(el => el.key === workId)[0].note;
+    else state.book.note = '';
 
     //Fetching each editions of a certain work
     const data = await getJSON(`http://openlibrary.org${workId}/editions.json`);
@@ -206,14 +209,6 @@ export const loadBookInfo = async function (workId) {
           info.isbn_10 = entry.isbn_10[0];
           info.isbn_13 = entry.isbn_13[0];
         }
-      } else {
-        // Stores the languages available in certain edition of work
-        if (
-          !info.languages.includes(
-            ...entry.languages[0].key.split('/').splice(-1)
-          )
-        )
-          info.languages.push(...entry.languages[0].key.split('/').splice(-1));
       }
     }
     const authorInfo = await loadAuthorName(info.authors);
@@ -290,7 +285,7 @@ export const addBookmark = function (bookId) {
   //Mark Current book as bookmark
   if (bookId === state.book.info.key) state.book.bookmarked = true;
 
-  modifyLocalStorage();
+  modifyLocalStorageBookmark();
 };
 
 export const removeBookmark = function (bookId) {
@@ -300,15 +295,33 @@ export const removeBookmark = function (bookId) {
   //Unmark Current book as bookmark
   if (bookId === state.book.info.key) state.book.bookmarked = false;
 
-  modifyLocalStorage();
+  modifyLocalStorageBookmark();
 };
 
-const modifyLocalStorage = function () {
+const modifyLocalStorageBookmark = function () {
   localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks.present));
+};
+
+export const addNote = function (workId, note) {
+  if (state.notes.some(el => el.key === workId)) {
+    state.notes.forEach(el => {
+      if (el.key === workId) el.note = note;
+    });
+  } else {
+    state.notes.push({ key: workId, note: note });
+  }
+
+  modifyLocalStorageNotes();
+};
+
+const modifyLocalStorageNotes = function () {
+  localStorage.setItem('notes', JSON.stringify(state.notes));
 };
 
 const init = function () {
   const bookmarks = localStorage.getItem('bookmarks');
   if (bookmarks) state.bookmarks.present = JSON.parse(bookmarks);
+  const notes = localStorage.getItem('notes');
+  if (notes) state.notes = JSON.parse(notes);
 };
 init();

@@ -212,12 +212,17 @@ const bookmarkController = async function () {
   }
 };
 
+const saveNoteController = function (workId, note) {
+  model.addNote(workId, note);
+};
+
 const init = function () {
   bookView.eventHandlers();
   bookView.addBookmarkEventHandler(addBookmarkController);
   searchView.eventHandlers(searchController);
   bookmarksView.eventHandlers();
   bookmarksView.bookmarkEventHandler(bookmarkController);
+  bookView.addSaveEventHandler(saveNoteController);
 };
 
 init();

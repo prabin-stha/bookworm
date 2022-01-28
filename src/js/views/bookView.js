@@ -1,5 +1,6 @@
 import { mark } from 'regenerator-runtime';
 import logo from 'url:../../img/logo/openlibrary.png';
+import { state } from '../model';
 
 class BookView {
   #parentEl = document.querySelector('.book-info .container');
@@ -160,7 +161,8 @@ class BookView {
                   cols="35"
                   rows="8"
                   placeholder="Write some notes about this book here. Don't worry, the data will be saved inside your browser!"
-                ></textarea>
+                >${this.#data.note ? this.#data.note : ''}</textarea>
+                <button class="save">Save Note</button>
               </div>
             </div>
           </section>
@@ -233,6 +235,15 @@ class BookView {
       const bookmarkBtn = e.target.closest('.title-bookmark span');
       if (!bookmarkBtn) return;
       handler();
+    });
+  }
+
+  addSaveEventHandler(handler) {
+    this.#parentEl.addEventListener('click', e => {
+      const saveBtn = e.target.closest('.save');
+      if (!saveBtn) return;
+      const note = document.querySelector('#notes').value;
+      handler(this.#data.info.key, note);
     });
   }
 }
