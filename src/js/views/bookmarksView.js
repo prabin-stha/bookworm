@@ -98,6 +98,21 @@ class BookmarksView {
   }
 
   /**
+   * Render Error if some error is encountered
+   * @param {Object} error Error Object
+   */
+  renderError(error) {
+    const markup = `
+    <div class="error">
+      <p class="msg">
+        <span><i class="fas fa-exclamation-circle"></i></span>&nbsp;&nbsp;${error}
+      </p>
+    </div>
+    `;
+    this.#clearAndInsert(markup);
+  }
+
+  /**
    * If data field is empty list, render empty message
    */
   renderEmptyMessage() {

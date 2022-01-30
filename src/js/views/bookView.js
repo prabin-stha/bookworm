@@ -225,6 +225,39 @@ class BookView {
   }
 
   /**
+   * Renders success message when some operation is performed sucessfully
+   * @param {String} msg Success Message. This is used in render method of this object
+   */
+  renderSuccess() {
+    const markup = `
+    <div class="message-s">
+          <p class="success-msg">
+            <span><i class="fas fa-check-circle"></i></span>&nbsp;&nbsp;Note Saved Sucessfully!
+          </p>
+        </div>
+    `;
+    document.querySelector('.notes').insertAdjacentHTML('afterbegin', markup);
+    const success = document.querySelector('.message-s');
+    success.classList.toggle('active');
+    setTimeout(() => success.classList.toggle('active'), 4000);
+    setTimeout(() => success.remove(), 5000);
+  }
+
+  /**
+   * Render Error if some error is encountered
+   * @param {Object} error Error Object
+   */
+  renderError(msg) {
+    const markup = `
+    <p class="error-msg">
+            <span><i class="fas fa-exclamation-circle"></i></span
+            >&nbsp;&nbsp;${msg}
+          </p>
+    `;
+    this.#clearAndInsert(markup);
+  }
+
+  /**
    * Renders spinner in the parent container
    */
   renderSpinner() {

@@ -31,8 +31,7 @@ const bookController = async function (workId) {
     //Rendering Book Info
     bookView.render(data);
   } catch (err) {
-    // TODO: Render Error in client side
-    console.error(err);
+    bookView.renderError(err);
   }
 };
 
@@ -75,6 +74,9 @@ const searchController = async function () {
       loadMoreView.eventHandlers(loadMoreController);
     }
   } catch (err) {
+    // Enable search after the search results have been loaded
+    searchView.enableSearch();
+    searchView.enableButton();
     searchView.renderError(err);
   }
 };
@@ -149,8 +151,7 @@ const bookmarkController = async function () {
       bookmarksView.renderEmptyMessage();
     }
   } catch (err) {
-    // TODO: Render error in Client side
-    console.error(err);
+    bookmarksView.renderError(err);
   }
 };
 
@@ -161,6 +162,7 @@ const bookmarkController = async function () {
  */
 const saveNoteController = function (workId, note) {
   model.addNote(workId, note);
+  bookView.renderSuccess();
 };
 
 const init = function () {

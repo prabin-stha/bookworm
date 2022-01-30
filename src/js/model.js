@@ -83,8 +83,7 @@ const getSubjects = async function (workId) {
     const { subjects } = data;
     return subjects;
   } catch (err) {
-    // TODO: Render error in client side
-    console.error(err);
+    throw err;
   }
 };
 
@@ -262,8 +261,7 @@ export const loadBookInfo = async function (workId) {
     info.subjects = subjects;
     state.book.info = info;
   } catch (err) {
-    // TODO: Render Error in Client Side
-    console.error(err);
+    throw err;
   }
 };
 
@@ -330,8 +328,7 @@ export const loadBookmarksInfo = async function () {
       state.bookmarks.results.push(info);
     }
   } catch (err) {
-    // TODO: Render error in client side
-    console.error(err);
+    throw err;
   }
 };
 
