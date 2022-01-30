@@ -6,15 +6,26 @@ class BookView {
   #parentEl = document.querySelector('.book-info .container');
   #data;
 
+  /**
+   * Clear parent element's innerHTML
+   */
   #clear() {
     this.#parentEl.innerHTML = '';
   }
 
+  /**
+   * Clears and Inserts HTML markup inside parent element
+   * @param {String} markup HTML markup
+   */
   #clearAndInsert(markup) {
     this.#clear();
     this.#parentEl.insertAdjacentHTML('afterbegin', markup);
   }
 
+  /**
+   * Generates HTML markup for viewing book information
+   * @returns HTML markup
+   */
   #generateMarkup() {
     return `
       <div class="book-header">
@@ -170,18 +181,28 @@ class BookView {
       `;
   }
 
+  /**
+   * re-renders just bookmark icon when something is changed in the DOM
+   * @param {Object} data state.book object
+   */
   update(data) {
     this.#data = data;
     const newMarkup = this.#generateMarkup();
 
+    // Creates like a virtual dom from the HTML markup
     const newDom = document.createRange().createContextualFragment(newMarkup);
+
+    // Convert NodeList of all elements in DOM of newDOM  to Array
     const newElements = Array.from(newDom.querySelectorAll('*'));
+
+    // Convert NodeList of all elements in DOM of current parent element to Array
     const curElements = Array.from(this.#parentEl.querySelectorAll('*'));
 
     newElements.forEach((newEl, i) => {
       const curEl = curElements[i];
       if (!newEl.isEqualNode(curEl)) {
         Array.from(newEl.attributes).forEach(attr => {
+          // If the element is a bookmark icon
           if (
             attr.value === 'fas fa-bookmark' ||
             attr.value === 'far fa-bookmark'
@@ -193,12 +214,19 @@ class BookView {
     });
   }
 
+  /**
+   * Renders book information in the parent element. This method is called when book-item-component is clicked
+   * @param {Object} data state.book object
+   */
   render(data) {
     this.#data = data;
     const markup = this.#generateMarkup();
     this.#clearAndInsert(markup);
   }
 
+  /**
+   * Renders spinner in the parent container
+   */
   renderSpinner() {
     const markup = `
     <div class="loadingio-spinner-double-ring-48jq6smvq69">
@@ -213,6 +241,9 @@ class BookView {
     this.#clearAndInsert(markup);
   }
 
+  /**
+   * Event handlers for open/close animation of book-container
+   */
   eventHandlers() {
     const overlay = document.querySelector('.overlay');
     const bookInfo = document.querySelector('.book-info');
@@ -230,16 +261,26 @@ class BookView {
     });
   }
 
+  /**
+   * Adds click event listner to bookmarks icon inside book-container and calls addBookmarkController when clicked
+   * @param {Function} handler addBookmarkController from controller.js
+   */
   addBookmarkEventHandler(handler) {
     this.#parentEl.addEventListener('click', e => {
+      // bookmarkBtn might not exist yet to handle the event. so, when there is an element closest to a bookmark element in its parent container, run the handler function
       const bookmarkBtn = e.target.closest('.title-bookmark span');
       if (!bookmarkBtn) return;
       handler();
     });
   }
 
+  /**
+   * Adds click event listner to save note button inside book-container and calls saveNoteController when clicked
+   * @param {Function} handler saveNoteController from controller.js
+   */
   addSaveEventHandler(handler) {
     this.#parentEl.addEventListener('click', e => {
+      //Save note button might not exist yet to handle the event. so, when there is an element closest to a save note button in its parent container, run the handler function
       const saveBtn = e.target.closest('.save');
       if (!saveBtn) return;
       const note = document.querySelector('#notes').value;

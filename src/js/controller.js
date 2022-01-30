@@ -5,159 +5,71 @@ import 'regenerator-runtime/runtime';
 //Importing model
 import * as model from './model.js';
 
-//Importing Views
+//Importing views
 import bookView from './views/bookView';
 import searchView from './views/searchView';
-import bookmarksView from './views/bookmarksView.js';
-import loadMoreView from './views/loadMoreView.js';
+import bookmarksView from './views/bookmarksView';
+import loadMoreView from './views/loadMoreView';
+import {
+  BookItem,
+  defineWebComponent,
+} from './views/bookItemWebComponentView.js';
 
-(function () {
-  /**
-   * *Book Item Custom Web Component
-   */
-  const template = document.createElement('template');
-  template.innerHTML = `
-  <style>
-    *{
-        margin: 0;
-        box-sizing: border-box;
-    }
-    .search-item {
-        display: flex;
-        max-width: 250px;
-        flex-direction: row;
-        gap: 10px;
-    }
+/**
+ * Controller for showing book information when a certain book-item-component is clicked
+ * @param {String} workId Work Id of Book
+ */
+const bookController = async function (workId) {
+  try {
+    // Rendering Loading Spinner
+    bookView.renderSpinner();
 
-    img {
-        border-radius: 5px;
-        cursor: pointer;
-    }         
+    // Loading Book Info
+    await model.loadBookInfo(workId);
+    const data = model.state.book;
 
-    h4 {
-        font-size: 16px;
-        color: #4b4b4b;
-        font-weight: 600;
-        padding-bottom: 4px;
-    }
-
-    h5 {
-        font-size: 12px;
-        color: #6c6c6c;
-        padding-bottom: 4px;
-    }
-
-    h6 {
-        font-size: 10px;
-        color: #6c6c6c;
-    }
-  </style>
-  <div class="search-item">
-    <figure>
-        <img id='book-img' width="70" height="100"/>
-    </figure>
-    <div class="desc">
-        <h4><slot name='title'></h4>
-        <h5><slot name='author'></h5>
-        <h6><slot name='date'></h6>
-    </div>
-  </div>
-  `;
-
-  class BookItem extends HTMLElement {
-    /**
-     * *Creating custom HTML Element
-     */
-    constructor() {
-      super();
-      // *Attaching the current object to shadow DOM and appending new HTML templete to it's shadow root
-      this.attachShadow({ mode: 'open' });
-      this.shadowRoot.appendChild(template.content.cloneNode(true));
-
-      // *Setting image source, padding and justify-content style for this object component
-      this.shadowRoot.querySelector('img').src = this.getAttribute('url');
-      this.shadowRoot.querySelector('.search-item').style.paddingBottom =
-        this.getAttribute('padding');
-      this.shadowRoot.querySelector('.search-item').style.justifyContent =
-        this.getAttribute('justify-content');
-    }
-
-    // *BookController Here
-    async #bookController(bookId) {
-      try {
-        // Rendering Loading Spinner
-        bookView.renderSpinner();
-
-        //loading Book Info
-        await model.loadBookInfo(bookId);
-        const data = model.state.book;
-
-        //Rendering Book Info
-        bookView.render(data);
-      } catch (err) {
-        // TODO: Handle Error
-      }
-    }
-
-    #showBookInfo() {
-      const bookmarks = document.querySelector('.bookmarks');
-      if (bookmarks.classList.contains('active'))
-        bookmarks.classList.remove('active');
-
-      // Displaying Book Information container and adding overlay
-      const overlay = document.querySelector('.overlay');
-      const bookInfo = document.querySelector('.book-info');
-
-      bookInfo.classList.add('active');
-      overlay.classList.add('active');
-
-      // *Showing Book Information
-      const bookId = this.getAttribute('book-id');
-      this.#bookController(bookId);
-    }
-
-    connectedCallback() {
-      // *Event when user clicks to the image - It should show book information
-      this.shadowRoot
-        .querySelector('img')
-        .addEventListener('click', () => this.#showBookInfo());
-    }
-
-    disconnectedCallback() {
-      // Removing Event Handler for this component if it is removed from DOM
-      this.shadowRoot
-        .querySelector('img')
-        .removeEventListener('click', () => this.#showBookInfo());
-    }
+    //Rendering Book Info
+    bookView.render(data);
+  } catch (err) {
+    // TODO: Render Error in client side
+    console.error(err);
   }
+};
 
-  // *Adding the custom element to document
-  customElements.get('book-item-component') ||
-    customElements.define('book-item-component', BookItem);
-})();
-
+/**
+ * Controller for controlling search results when search icon is clicked or enter is pressed while inside input field
+ */
 const searchController = async function () {
   try {
-    // const inputData = document.querySelector('input.search__box').value;
     const query = searchView.getQuery();
 
-    //Render Spinner
+    // Render Spinner
     searchView.renderSpinner();
 
-    //Load Search Results
+    // Disable search when search results is loading
+    searchView.disableSearch();
+    searchView.disableButton();
+
+    // Load Search Results
     await model.loadSearchInfo(query);
 
-    //Render Search Result
+    // Enable search after the search results have been loaded
+    searchView.enableSearch();
+    searchView.enableButton();
+
+    // Render Search Result
     searchView.render(
-      model.loadSearchResults(model.state.search.level),
+      model.getSearchResultsBasedOnLevel(model.state.search.level),
       model.state.search.results.length
     );
     model.state.search.level += 1;
 
-    //Render Load More
+    // Render Load More
     const maxLevel = Math.ceil(
       model.state.search.results.length / model.state.search.resultsPerPage
     );
+
+    //Display load more button only if there are more books present to load
     if (maxLevel > 1) {
       loadMoreView.render(model.state.search);
       loadMoreView.eventHandlers(loadMoreController);
@@ -167,62 +79,104 @@ const searchController = async function () {
   }
 };
 
+/**
+ * Remove click event handler for old load more button and add it again to a new load more button because the btn needs to be removed and added to the bottom of the search results every time it is pressed
+ */
 const addLoadMoreHandler = function () {
   loadMoreView.removeHandlers(loadMoreController);
   loadMoreView.eventHandlers(loadMoreController);
 };
 
+/**
+ * Controller to load more button and data when load more button is clicked
+ */
 const loadMoreController = function () {
   const maxLevel = Math.ceil(
     model.state.search.results.length / model.state.search.resultsPerPage
   );
-  searchView.renderMore(model.loadSearchResults(model.state.search.level));
+
+  // Load More Books based on model.state.search.level
+  searchView.renderMore(
+    model.getSearchResultsBasedOnLevel(model.state.search.level)
+  );
+
+  // Render Load More button and call addLoadMoreHandler if there are more data present in the state
   if (model.state.search.level < maxLevel) {
     loadMoreView.render();
     addLoadMoreHandler();
   }
+
+  //Increase the level of book every time load more btn is clicked
   model.state.search.level += 1;
 };
 
+/**
+ * Controller to control adding and removong bookmarks from a book info container when bookmark icon is clicked
+ */
 const addBookmarkController = function () {
   if (model.state.book.bookmarked) {
     model.removeBookmark(model.state.book.info.key);
   } else if (!model.state.book.bookmarked) {
     model.addBookmark(model.state.book.info.key);
   }
+
+  // This update method only re-renders the bookmark button and not the entire DOM when there is a change in the DOM
   bookView.update(model.state.book);
 };
 
+/**
+ * Controls bookmark when bookmark button is clicked
+ */
 const bookmarkController = async function () {
-  if (model.state.bookmarks.present.length >= 1) {
-    //Render Spinner
-    bookmarksView.renderSpinner();
+  try {
+    if (model.state.bookmarks.present.length >= 1) {
+      // Render Spinner
+      bookmarksView.renderSpinner();
 
-    //Load Data
-    if (
-      model.state.bookmarks.present.length !=
-      model.state.bookmarks.results.length
-    )
-      await model.loadBookmarksInfo();
+      // Load Data
+      if (
+        model.state.bookmarks.present.length !=
+        model.state.bookmarks.results.length
+      )
+        await model.loadBookmarksInfo();
 
-    //Render Data
-    bookmarksView.render(model.state.bookmarks.results);
-  } else {
-    bookmarksView.renderEmptyMessage();
+      // Add Event Listner for click again
+      bookmarksView.bookmarkEventHandler(bookmarkController);
+
+      // Render Data
+      bookmarksView.render(model.state.bookmarks.results);
+    } else {
+      bookmarksView.renderEmptyMessage();
+    }
+  } catch (err) {
+    // TODO: Render error in Client side
+    console.error(err);
   }
 };
 
+/**
+ * Controller for saving notes when save note button is clicked
+ * @param {String} workId Work Id of a Book
+ * @param {String} note Note from textbox
+ */
 const saveNoteController = function (workId, note) {
   model.addNote(workId, note);
 };
 
 const init = function () {
+  // Defining book-item-component
+  class BookItemComponent extends BookItem {
+    bookController = bookController;
+  }
+  defineWebComponent(BookItemComponent);
+
+  //Event handlers
   bookView.eventHandlers();
   bookView.addBookmarkEventHandler(addBookmarkController);
+  bookView.addSaveEventHandler(saveNoteController);
   searchView.eventHandlers(searchController);
   bookmarksView.eventHandlers();
   bookmarksView.bookmarkEventHandler(bookmarkController);
-  bookView.addSaveEventHandler(saveNoteController);
 };
 
 init();

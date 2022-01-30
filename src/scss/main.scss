@@ -90,13 +90,14 @@ body {
       }
     }
 
+    // For Search
     section {
       background-color: $white-light;
       margin: 0 auto;
       padding: 30px 0 20px 0;
       border-radius: 0 0 20px 20px;
       height: calc(100vh - (98px));
-      overflow-y: scroll;
+      overflow-y: auto;
 
       .search-container {
         max-width: 300px;
@@ -133,7 +134,6 @@ body {
           width: fit-content;
           height: auto;
           padding: 5px 10px;
-          // background-image: $linear-gradient;
           background-color: $black-dark;
           border-radius: 15px;
           opacity: 0;
@@ -271,7 +271,7 @@ body {
     }
   }
 
-  // *Show book information based on workId
+  // *Show book information
   .book-info {
     position: absolute;
     top: 16px;
@@ -499,7 +499,7 @@ body {
   }
 }
 
-//Loading Spinner Animation
+// Loading Spinner Animation
 .loadingio-spinner-double-ring-48jq6smvq69 {
   position: absolute;
   top: 50%;

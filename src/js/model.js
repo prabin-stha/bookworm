@@ -1,6 +1,9 @@
 import { LIMIT, RESULTS_PER_PAGE, TIMEOUT_SECONDS } from './config.js';
+
+// Import helper function
 import { getJSON, timeout } from './helpers.js';
 
+// *State for the bookworm website
 export const state = {
   book: {
     bookmarked: undefined,
@@ -19,33 +22,40 @@ export const state = {
   notes: [],
 };
 
-const loadWorkIds = async function (search) {
-  /**
-   * *Returns Work Ids
-   * @param search Takes in user search string
-   */
-
+/**
+ * Get workId's based on search parameter
+ * @param {String} search Search data from user input field
+ * @returns List of workId's for that search string
+ */
+const getWorkIds = async function (search) {
   try {
     const data = await getJSON(
       `http://openlibrary.org/search.json?q=${search}&limit=${LIMIT}`
     );
     const workIds = data.docs.map(el => el.key);
+
+    // Throw error if no books are found for the search
     if (!workIds.length)
       throw new Error(
         `No books with name "${search}" found. Please try another book name!`
       );
     return workIds;
   } catch (err) {
+    // Throw err Object to controller
     throw err;
   }
 };
 
-const loadAuthorName = async function (array) {
-  /**
-   * *Takes in array of object/s with key and returns name and key of author
-   */
+/**
+ * Get author names and AuthorIds
+ * @param {Object[]} array AuthorIds
+ * @returns list inside list of Author names and ids
+ */
+const getAuthorName = async function (array) {
   try {
     let dataAuthor = [];
+
+    // Return undefined if there are no authors of the book mentioned
     if (!array) return undefined;
     for (item of array) {
       const { key } = item;
@@ -54,37 +64,44 @@ const loadAuthorName = async function (array) {
     }
     return dataAuthor;
   } catch (err) {
+    // Throw err Object to controller
     throw err;
   }
 };
 
-const loadSubjects = async function (workId) {
-  /**
-   * *Takes in a workId and returns it's subjects if available else returns undefined
-   */
+/**
+ * Get Subjects of a certain book
+ * @param {String} workId workId of a book
+ * @returns Subjects of the respective workId
+ */
+const getSubjects = async function (workId) {
   try {
     const data = await getJSON(`https://openlibrary.org${workId}.json`);
+
+    // Return undefined if there are no subjects of the book mentioned
     if (!data.subjects) return undefined;
     const { subjects } = data;
     return subjects;
   } catch (err) {
+    // TODO: Render error in client side
     console.error(err);
   }
 };
 
+/**
+ * loads search information in state.search.results based on user search
+ * @param {String} search User search string
+ */
 export const loadSearchInfo = async function (search) {
-  /**
-   * *Returns search data for book-item-component
-   * @param search Takes in user search string
-   */
   try {
     state.search.results = [];
-    state.search.query = search;
 
+    // Throws an error if user does not search anything
     if (search === '')
       throw new Error('Opps! you forgot to enter a book name.');
 
-    const workIds = await loadWorkIds(search);
+    state.search.query = search;
+    const workIds = await getWorkIds(search);
 
     for (workId of workIds) {
       let info = {
@@ -95,21 +112,35 @@ export const loadSearchInfo = async function (search) {
         covers: undefined,
       };
 
+      // Race fetch and timeout. If timeout resolves before fetch, timeout error is thrown
       const res = await Promise.race([
         fetch(`http://openlibrary.org${workId}/editions.json`),
         timeout(TIMEOUT_SECONDS),
       ]);
       const data = await res.json();
 
+      // To ensure program doesnot end with an error when a workId is not found, continue for loop
       if (!res.ok) continue;
       const { entries } = data;
 
       for (entry of entries) {
+        // Break Statement if every object is defined
+        if (
+          info.key &&
+          info.title &&
+          info.publish_date &&
+          info.authors &&
+          info.covers
+        )
+          break;
+
+        // Take in book information if the language of the book is english or not defined
         if (
           entry.languages === undefined ||
           entry.languages[0].key === '/languages/eng' ||
           !entry.languages
         ) {
+          // If the object doesnot contain key value then insert available value
           if (!info.key) info.key = workId;
           if (!info.covers && entry.covers)
             info.covers = entry.covers[0].toString();
@@ -120,27 +151,26 @@ export const loadSearchInfo = async function (search) {
         }
       }
       if (info.authors) {
-        const authorInfo = await loadAuthorName(info.authors);
+        const authorInfo = await getAuthorName(info.authors);
         info.authors = authorInfo;
       }
 
       state.search.results.push(info);
-
-      info = {
-        key: undefined,
-        title: undefined,
-        authors: undefined,
-        publish_date: undefined,
-        covers: undefined,
-      };
     }
+    // Reset the level of Load More to 1 every time a book is searched
     state.search.level = 1;
   } catch (err) {
+    // Throw err Object to controller
     throw err;
   }
 };
 
-export const loadSearchResults = function (level) {
+/**
+ * Gets search results from state.search.results based on the level. Used for loading more books
+ * @param {Number} level how much level to go for loading books
+ * @returns search information based on the level user want to view books
+ */
+export const getSearchResultsBasedOnLevel = function (level) {
   state.search.level = level;
 
   const start = (level - 1) * 12;
@@ -149,11 +179,11 @@ export const loadSearchResults = function (level) {
   return state.search.results.slice(start, end);
 };
 
+/**
+ * Loads in book information based on a work id
+ * @param {String} workId WorkId of a specific book
+ */
 export const loadBookInfo = async function (workId) {
-  /**
-   * *Returns book information based on workId
-   * @param workId Takes in workId of a book
-   */
   try {
     let info = {
       key: undefined,
@@ -166,24 +196,40 @@ export const loadBookInfo = async function (workId) {
       description: undefined,
       covers: undefined,
       isbn_10: undefined,
-      isbn_13: undefined,
       subjects: undefined,
     };
 
+    // If the book is bookmarked from the data present in LS then set state.book.bookmarked to true else false
     if (state.bookmarks.present.includes(workId)) state.book.bookmarked = true;
     else state.book.bookmarked = false;
 
+    // If the book contains note from the data present in LS then set state.book.note to data from LS else ''
     if (state.notes.some(el => el.key === workId))
       state.book.note = state.notes.filter(el => el.key === workId)[0].note;
     else state.book.note = '';
 
-    //Fetching each editions of a certain work
+    // Fetching each editions of a certain work
     const data = await getJSON(`http://openlibrary.org${workId}/editions.json`);
 
     const { entries } = data;
 
     // For each edition, if there exist a property not available in the info object then insert its value
     for (entry of entries) {
+      // Break Statement if every object is defined
+      if (
+        info.key &&
+        info.title &&
+        info.subtitle &&
+        info.publish_date &&
+        info.authors &&
+        info.publishers &&
+        info.number_of_pages &&
+        info.description &&
+        info.covers &&
+        info.isbn_10
+      )
+        break;
+
       // If the language of the book is english or if the language property doesnot exist or is undefined then get information from that edition.
       if (
         entry.languages === undefined ||
@@ -205,22 +251,23 @@ export const loadBookInfo = async function (workId) {
           info.description = entry.description.value;
         if (!info.covers && entry.covers)
           info.covers = entry.covers[0].toString();
-        if (!(info.isbn_10 && info.isbn_13) && entry.isbn_10 && entry.isbn_13) {
-          info.isbn_10 = entry.isbn_10[0];
-          info.isbn_13 = entry.isbn_13[0];
-        }
+        if (!info.isbn_10 && entry.isbn_10) info.isbn_10 = entry.isbn_10[0];
       }
     }
-    const authorInfo = await loadAuthorName(info.authors);
+    const authorInfo = await getAuthorName(info.authors);
     info.authors = authorInfo;
-    const subjects = await loadSubjects(info.key);
+    const subjects = await getSubjects(info.key);
     info.subjects = subjects;
     state.book.info = info;
   } catch (err) {
+    // TODO: Render Error in Client Side
     console.error(err);
   }
 };
 
+/**
+ * Loads bookmarks information based on state.bookmarks.present which gets its data from LS
+ */
 export const loadBookmarksInfo = async function () {
   try {
     state.bookmarks.results = [];
@@ -233,21 +280,35 @@ export const loadBookmarksInfo = async function () {
         covers: undefined,
       };
 
+      // Race fetch and timeout. If timeout resolves before fetch, timeout error is thrown
       const res = await Promise.race([
         fetch(`http://openlibrary.org${workId}/editions.json`),
         timeout(TIMEOUT_SECONDS),
       ]);
       const data = await res.json();
 
+      // To ensure program doesnot end with an error when a workId is not found, continue for loop
       if (!res.ok) continue;
       const { entries } = data;
 
       for (entry of entries) {
+        // Break Statement if every object is defined
+        if (
+          info.key &&
+          info.title &&
+          info.publish_date &&
+          info.authors &&
+          info.covers
+        )
+          break;
+
+        // Take in book information if the language of the book is english or not defined
         if (
           entry.languages === undefined ||
           entry.languages[0].key === '/languages/eng' ||
           !entry.languages
         ) {
+          // If the object doesnot contain key value then insert available value
           if (!info.key) info.key = workId;
           if (!info.covers && entry.covers)
             info.covers = entry.covers[0].toString();
@@ -258,50 +319,60 @@ export const loadBookmarksInfo = async function () {
         }
       }
       if (info.authors) {
-        const authorInfo = await loadAuthorName(info.authors);
+        const authorInfo = await getAuthorName(info.authors);
         info.authors = authorInfo;
       }
 
+      // If there is identical result then don't insert the info in state.bookmarks.results
       if (state.bookmarks.results.some(el => el.key === info.key)) continue;
       state.bookmarks.results.push(info);
-
-      info = {
-        key: undefined,
-        title: undefined,
-        authors: undefined,
-        publish_date: undefined,
-        covers: undefined,
-      };
     }
   } catch (err) {
+    // TODO: Render error in client side
     console.error(err);
   }
 };
 
-export const addBookmark = function (bookId) {
+/**
+ * Adds a book's work id in Local Storage and state.bookmarks.present, change the state of book.bookmarked to true
+ * @param {String} workId Work Id of a Book
+ */
+export const addBookmark = function (workId) {
   //Add Bookmark
-  state.bookmarks.present.push(bookId);
+  state.bookmarks.present.push(workId);
 
   //Mark Current book as bookmark
-  if (bookId === state.book.info.key) state.book.bookmarked = true;
+  if (workId === state.book.info.key) state.book.bookmarked = true;
 
   modifyLocalStorageBookmark();
 };
 
-export const removeBookmark = function (bookId) {
+/**
+ * Removes a book's work id from Local Storage and state.bookmarks.present, change the state of book.bookmarked to false
+ * @param {String} workId Work Id of a Book
+ */
+export const removeBookmark = function (workId) {
   //Remove Bookmark
-  state.bookmarks.present = state.bookmarks.present.filter(el => el != bookId);
+  state.bookmarks.present = state.bookmarks.present.filter(el => el != workId);
 
   //Unmark Current book as bookmark
-  if (bookId === state.book.info.key) state.book.bookmarked = false;
+  if (workId === state.book.info.key) state.book.bookmarked = false;
 
   modifyLocalStorageBookmark();
 };
 
+/**
+ * Updates Local Storage based on the list present in state.bookmarks.present
+ */
 const modifyLocalStorageBookmark = function () {
   localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks.present));
 };
 
+/**
+ * Adds an object of with key and note properties to state.notes and Local Storage
+ * @param {String} workId Work Id of a Book
+ * @param {String} note Note for a certain Book with a work Id
+ */
 export const addNote = function (workId, note) {
   if (state.notes.some(el => el.key === workId)) {
     state.notes.forEach(el => {
@@ -314,11 +385,15 @@ export const addNote = function (workId, note) {
   modifyLocalStorageNotes();
 };
 
+/**
+ * Modifies Local Storage based on the state.notes
+ */
 const modifyLocalStorageNotes = function () {
   localStorage.setItem('notes', JSON.stringify(state.notes));
 };
 
 const init = function () {
+  //Get bookmarks and notes from Local Storage and insert it into state.bookmarks.present and state.notes at the start of the program
   const bookmarks = localStorage.getItem('bookmarks');
   if (bookmarks) state.bookmarks.present = JSON.parse(bookmarks);
   const notes = localStorage.getItem('notes');
