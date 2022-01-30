@@ -77,7 +77,8 @@ const searchController = async function () {
     // Enable search after the search results have been loaded
     searchView.enableSearch();
     searchView.enableButton();
-    searchView.renderError(err);
+    console.error(err);
+    // searchView.renderError(err);
   }
 };
 
