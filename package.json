@@ -9,7 +9,7 @@
   "author": "Prabin Shrestha",
   "license": "ISC",
   "devDependencies": {
-    "@parcel/transformer-sass": "^2.0.0",
+    "@parcel/transformer-sass": "^2.2.1",
     "parcel": "^2.0.0"
   },
   "dependencies": {
