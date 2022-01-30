@@ -1,6 +1,6 @@
 //Polyfilling JS
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
+// import 'core-js/stable';
+// import 'regenerator-runtime/runtime';
 
 //Importing model
 import * as model from './model.js';
