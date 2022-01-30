@@ -2,7 +2,7 @@
   "name": "bookworm",
   "version": "1.0.0",
   "description": "A simple website for getting book information, adding bookmarks and writting notes",
-  "main": "bookworm.js",
+  "main": "index.html",
   "scripts": {
     "start": "parcel index.html",
     "build": "parcel build index.html --dist-dir ./dist"
