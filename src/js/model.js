@@ -30,7 +30,7 @@ export const state = {
 const getWorkIds = async function (search) {
   try {
     const data = await getJSON(
-      `http://openlibrary.org/search.json?q=${search}&limit=${LIMIT}`
+      `https://openlibrary.org/search.json?q=${search}&limit=${LIMIT}`
     );
     const workIds = data.docs.map(el => el.key);
 
@@ -114,7 +114,7 @@ export const loadSearchInfo = async function (search) {
 
       // Race fetch and timeout. If timeout resolves before fetch, timeout error is thrown
       const res = await Promise.race([
-        fetch(`http://openlibrary.org${workId}/editions.json`),
+        fetch(`https://openlibrary.org${workId}/editions.json`),
         timeout(TIMEOUT_SECONDS),
       ]);
       const data = await res.json();
@@ -209,7 +209,9 @@ export const loadBookInfo = async function (workId) {
     else state.book.note = '';
 
     // Fetching each editions of a certain work
-    const data = await getJSON(`http://openlibrary.org${workId}/editions.json`);
+    const data = await getJSON(
+      `https://openlibrary.org${workId}/editions.json`
+    );
 
     const { entries } = data;
 
@@ -282,7 +284,7 @@ export const loadBookmarksInfo = async function () {
 
       // Race fetch and timeout. If timeout resolves before fetch, timeout error is thrown
       const res = await Promise.race([
-        fetch(`http://openlibrary.org${workId}/editions.json`),
+        fetch(`https://openlibrary.org${workId}/editions.json`),
         timeout(TIMEOUT_SECONDS),
       ]);
       const data = await res.json();
