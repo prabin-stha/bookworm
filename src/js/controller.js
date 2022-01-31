@@ -1,6 +1,6 @@
-//Polyfilling JS
-// import 'core-js/stable';
-// import 'regenerator-runtime/runtime';
+// Polyfilling JS
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 
 //Importing model
 import * as model from './model.js';
@@ -77,8 +77,7 @@ const searchController = async function () {
     // Enable search after the search results have been loaded
     searchView.enableSearch();
     searchView.enableButton();
-    console.error(err);
-    // searchView.renderError(err);
+    searchView.renderError(err);
   }
 };
 
