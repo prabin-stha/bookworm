@@ -29,19 +29,22 @@ export const state = {
  */
 const getWorkIds = async function (search) {
   try {
-    const data = await getJSON(
+    const res = await fetch(
       `https://openlibrary.org/search.json?q=${search}&limit=${LIMIT}`
     );
-    const workIds = data.docs.map(el => el.key);
+    const data = await res.json();
+    const workId = data.docs.map(el => el.key);
+    console.log(workId);
 
     // Throw error if no books are found for the search
-    if (!workIds.length)
+    if (!workId.length)
       throw new Error(
         `No books with name "${search}" found. Please try another book name!`
       );
-    return workIds;
+    return workId;
   } catch (err) {
     // Throw err Object to controller
+    console.log('getWorkId', err);
     throw err;
   }
 };
