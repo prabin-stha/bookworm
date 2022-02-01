@@ -147,7 +147,6 @@ const performSearchOperation = async function (workId) {
   if (info.authors) {
     const authorInfo = await getAuthorName(info.authors);
     info.authors = authorInfo;
-    console.log(authorInfo);
   }
   return info;
 };

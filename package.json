@@ -4,7 +4,8 @@
   "description": "A simple website for getting book information, adding bookmarks and writting notes",
   "default": "index.html",
   "scripts": {
-    "start": "parcel index.html"
+    "start": "parcel index.html",
+    "build": "npx parcel build index.html --public-url ./ --dist-dir ./dist --no-scope-hoist"
   },
   "author": "Prabin Shrestha",
   "license": "ISC",

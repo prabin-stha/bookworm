@@ -6,9 +6,11 @@ body {
   background-image: $linear-gradient;
   overflow: hidden;
   font-family: $poppins;
+  height: 100vh;
+  width: 100vw;
 
   .body-container {
-    margin: 16px 8px;
+    margin: 16px 8px 20px 8px;
 
     header {
       background-color: $white-grey;
@@ -96,7 +98,7 @@ body {
       margin: 0 auto;
       padding: 30px 0 20px 0;
       border-radius: 0 0 20px 20px;
-      height: calc(100vh - (98px));
+      height: calc(100vh - (96px));
       overflow-y: auto;
 
       .search-container {
@@ -107,6 +109,17 @@ body {
         justify-items: flex-start;
         row-gap: 18px;
         padding: 0 32px;
+
+        span.msg {
+          position: absolute;
+          width: fit-content;
+          padding: 0 64px;
+          text-align: center;
+          font-size: 14px;
+          left: 50%;
+          transform: translateX(-50%);
+          color: $black-dark;
+        }
 
         .error {
           position: absolute;
@@ -156,6 +169,7 @@ body {
         }
 
         button.load-more {
+          margin-right: 16px;
           justify-self: center;
           background-image: $linear-gradient;
           padding: 6px 14px;
@@ -183,7 +197,7 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 2px 0;
+    padding-top: 2px;
     letter-spacing: 1px;
 
     span i {
