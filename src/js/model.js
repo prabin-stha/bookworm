@@ -71,7 +71,9 @@ const getAuthorName = async function (array) {
     if (!array) return undefined;
     for (item of array) {
       const { key } = item;
-      const data = await getJSON(`https://openlibrary.org${key}.json`);
+      const res = await fetch(`https://openlibrary.org${key}.json`);
+      if (!res.ok) continue;
+      const data = await res.json();
       dataAuthor.push([data.name, key]);
     }
     return dataAuthor;
@@ -99,6 +101,11 @@ const getSubjects = async function (workId) {
   }
 };
 
+/**
+ * Perform fetch request for getting book infomation using workId, get data and return it
+ * @param {String} workId workId of a Book
+ * @returns Book information object
+ */
 const performSearchOperation = async function (workId) {
   let info = {
     key: undefined,
@@ -168,7 +175,7 @@ const loadSearchInfo = async function (search) {
 
     for (workId of workIds) {
       const info = await performSearchOperation(workId);
-      state.search.results.push(info);
+      if (info) state.search.results.push(info);
     }
 
     // Reset the level of Load More to 1 every time a book is searched
